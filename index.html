@@ -1,1802 +1,981 @@
-
 <!DOCTYPE html>
-
-
-
-
 <html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taylor McDonald — Data Science</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <title>Chapter 0 Preface &mdash; OpenDSA Data Structures and Algorithms Modules Collection</title>
-    
-    
-      <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
-    
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../lib/normalize.css" type="text/css" />
-    <link rel="stylesheet" href="../../../lib/JSAV.css" type="text/css" />
-    <link rel="stylesheet" href="../../../lib/odsaMOD-min.css" type="text/css" />
-    <link rel="stylesheet" href="../../../lib/jquery.ui.min.css" type="text/css" />
-    <link rel="stylesheet" href="../../../lib/odsaStyle-min.css" type="text/css" />
-    
-  <script type="text/javascript">
-    var DOCUMENTATION_OPTIONS = {
-      URL_ROOT:    './',
-      VERSION:     '0.4.1',
-      COLLAPSE_INDEX: false,
-      FILE_SUFFIX: '.html',
-      HAS_SOURCE:  true
-    };
-  </script>
+  :root {
+    --bg: #0e0e0f;
+    --bg2: #161618;
+    --bg3: #1e1e20;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ede8;
+    --muted: #6b6b72;
+    --accent: #f2a7b8;      /* cherry blossom pink */
+    --accent2: #8b2035;     /* deep reddish */
+    --red: #ff5f57;
+    --yellow: #febc2e;
+    --green: #28c840;
+  }
 
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
-        processEscapes: true
-      },
-      "HTML-CSS": {
-        scale: "80"
-      }
-    });
-  </script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="index" title="OpenDSA Data Structures and Algorithms Modules Collection" href="#" />
-    <link rel="next" title="1. How to Use this System" href="Intro.html" />
+  html { scroll-behavior: smooth; }
 
-  <style>
-ul li {
-	background: none;
-	list-style-type: none;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(242,167,184,0.4);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 48px;
+    background: rgba(14,14,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.15em; color: var(--accent);
+  }
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    text-decoration: none; color: var(--muted);
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-resume {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 16px; background: transparent;
+    border: 1px solid rgba(242,167,184,0.35);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: none; transition: background 0.2s, border-color 0.2s;
+  }
+  .nav-resume:hover { background: rgba(242,167,184,0.08); border-color: var(--accent); }
+  .nav-resume svg { transition: transform 0.2s; }
+  .nav-resume:hover svg { transform: translateY(2px); }
+
+  /* TICKER */
+  .ticker {
+    margin-top: 65px; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2); padding: 10px 0;
+  }
+  .ticker-track {
+    display: flex; animation: ticker 20s linear infinite; width: max-content;
+  }
+  .ticker-item {
+    display: flex; align-items: center; gap: 32px;
+    padding: 0 32px; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); white-space: nowrap;
+  }
+  .ticker-item span { color: var(--accent); }
+  .ticker-dot { width: 4px; height: 4px; background: var(--border); border-radius: 50%; }
+  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  /* HERO */
+  .hero {
+    min-height: 88vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 48px 64px; position: relative; overflow: hidden;
+  }
+  .hero-bg-text {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(120px, 20vw, 280px);
+    color: rgba(255,255,255,0.025); letter-spacing: -0.02em;
+    white-space: nowrap; pointer-events: none; user-select: none;
+  }
+  .hero-tag {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 12vw, 160px);
+    line-height: 0.92; letter-spacing: -0.01em; margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.9s 0.35s forwards;
+  }
+  .hero-name em {
+    font-style: italic; font-family: 'DM Serif Display', serif;
+    color: var(--accent2);
+  }
+  .hero-desc {
+    max-width: 520px; font-size: 13px; line-height: 1.8; color: var(--muted);
+    opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+  }
+  .hero-cta {
+    margin-top: 40px; display: flex; gap: 16px; align-items: center;
+    opacity: 0; animation: fadeUp 0.9s 0.65s forwards;
+  }
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+    padding: 12px 28px; font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    text-decoration: none; transition: background 0.2s, transform 0.15s; display: inline-block;
+  }
+  .btn-primary:hover { background: #f7c4d0; transform: translateY(-2px); }
+  .btn-ghost {
+    color: var(--muted); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; text-decoration: none;
+    border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--text); }
+  .hero-scroll-hint {
+    position: absolute; right: 48px; bottom: 64px;
+    writing-mode: vertical-rl; font-size: 10px; letter-spacing: 0.15em;
+    color: var(--muted); text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeIn 1s 1s forwards;
+  }
+  .hero-scroll-hint::after {
+    content: ''; width: 1px; height: 60px; background: var(--border);
+    animation: lineGrow 1.2s 1.2s forwards;
+    transform-origin: top; transform: scaleY(0);
+  }
+  @keyframes lineGrow { to { transform: scaleY(1); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  /* SECTIONS */
+  section { padding: 100px 48px; }
+  .section-label {
+    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 10vw, 130px);
+    line-height: 0.9; letter-spacing: -0.01em; margin-bottom: 60px;
+  }
+
+  /* PROJECTS */
+  #projects { background: var(--bg); }
+  .projects-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 64px; border-bottom: 1px solid var(--border); padding-bottom: 32px;
+  }
+  .projects-count { font-size: 11px; letter-spacing: 0.12em; color: var(--muted); }
+
+  .project-card {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--border); margin-bottom: 2px;
+    background: var(--bg2); cursor: none;
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.6s, transform 0.6s, background 0.2s; overflow: hidden;
+  }
+  .project-card.visible { opacity: 1; transform: translateY(0); }
+  .project-card:hover { background: var(--bg3); border-color: rgba(255,255,255,0.15); }
+
+  .project-left {
+    padding: 40px; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: space-between; min-height: 200px;
+  }
+  .project-number { font-size: 10px; letter-spacing: 0.2em; color: var(--muted); margin-bottom: 20px; }
+  .project-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 2.5vw, 32px); line-height: 1.15; margin-bottom: 16px; font-style: italic;
+  }
+  .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 4px 10px; border: 1px solid var(--border); color: var(--muted);
+  }
+  .tag.accent { border-color: var(--accent); color: var(--accent); }
+  .tag.red    { border-color: var(--accent2); color: #c45070; }
+
+  .project-right {
+    padding: 40px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .project-desc { font-size: 12px; line-height: 1.9; color: var(--muted); margin-bottom: 28px; }
+  .project-stack { font-size: 10px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+  .project-stack span { color: var(--accent); }
+  .project-metric {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; color: var(--accent); line-height: 1; margin-bottom: 4px;
+  }
+  .project-metric-label { font-size: 10px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+  .project-link {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    width: fit-content; margin-top: 20px;
+  }
+  .project-link:hover { color: var(--text); border-color: var(--border); }
+  .project-link-arrow { font-size: 16px; transition: transform 0.2s; }
+  .project-link:hover .project-link-arrow { transform: translate(3px, -3px); }
+
+  /* ABOUT / FINDER */
+  #about { background: var(--bg2); }
+
+  .finder-window {
+    /* top corners rounded like a real macOS window, bottom stays square */
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px 12px 0 0;
+    /* overflow visible so popouts can escape the box */
+    overflow: visible;
+    background: #1c1c1e;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    max-width: 900px; margin: 0 auto;
+    opacity: 0; transform: translateY(40px) scale(0.97);
+    transition: opacity 0.7s, transform 0.7s;
+    position: relative;
+  }
+  .finder-window.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+  /* titlebar: rounded top corners to match window */
+  .finder-titlebar {
+    background: #2a2a2c;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px 12px 0 0;
+  }
+
+  /* traffic lights */
+  .tl-group { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 13px; height: 13px; border-radius: 50%; position: relative; cursor: none; transition: filter 0.15s; }
+  .dot:hover { filter: brightness(1.3); }
+  .dot::after { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.15s; }
+  .tl-group:hover .dot::after { opacity: 1; }
+  .dot-red    { background: var(--red); }   .dot-red::after    { content: '✕'; }
+  .dot-yellow { background: var(--yellow); } .dot-yellow::after { content: '−'; }
+  .dot-green  { background: var(--green); }  .dot-green::after  { content: '+'; }
+  .finder-title { flex: 1; text-align: center; font-size: 12px; color: var(--muted); }
+
+  /* body clips sidebar/main but not the floating popouts */
+  .finder-body { display: flex; height: 420px; border-radius: 0 0 0 0; overflow: hidden; }
+  .finder-sidebar {
+    width: 180px; background: #1a1a1c;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    padding: 16px 0; flex-shrink: 0;
+  }
+  .sidebar-section-label {
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: #444; padding: 0 16px 8px;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 16px; font-size: 12px; color: var(--muted);
+    cursor: none; transition: background 0.15s, color 0.15s;
+  }
+  .sidebar-item:hover, .sidebar-item.active { background: rgba(255,255,255,0.07); color: var(--text); }
+
+  .finder-main { flex: 1; padding: 24px; overflow: visible; position: relative; }
+  .finder-main::-webkit-scrollbar { width: 4px; }
+  .finder-main::-webkit-scrollbar-thumb { background: var(--border); }
+  .finder-section-title {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 20px;
+  }
+
+  /* folder grid — needs overflow visible for popouts */
+  .finder-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-bottom: 32px; }
+
+  .finder-folder {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: none; position: relative; z-index: 1;
+  }
+  .finder-folder:hover { z-index: 50; }
+
+  .folder-icon {
+    width: 58px; height: 50px; border-radius: 7px; position: relative;
+    background: linear-gradient(160deg, #f2a7b8 0%, #c96b85 100%);
+    box-shadow: 0 4px 16px rgba(242,167,184,0.25);
+    transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), filter 0.25s;
+    z-index: 2;
+  }
+  .finder-folder:hover .folder-icon { transform: scale(1.12) translateY(-5px); filter: brightness(1.18); }
+  .folder-icon::before {
+    content: ''; position: absolute; top: -6px; left: 6px;
+    width: 22px; height: 8px; background: #f7c4d0; border-radius: 4px 4px 0 0;
+  }
+  .folder-label { font-size: 10px; color: var(--muted); text-align: center; transition: color 0.2s; z-index: 2; }
+  .finder-folder:hover .folder-label { color: var(--text); }
+
+  /* folder tooltip */
+  .folder-tip {
+    position: absolute; bottom: -26px; left: 50%;
+    transform: translateX(-50%) scale(0.88);
+    background: var(--accent2); color: #fff;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+    opacity: 0; transition: opacity 0.18s, transform 0.18s;
+    pointer-events: none; z-index: 60;
+  }
+  .finder-folder:hover .folder-tip { opacity: 1; transform: translateX(-50%) scale(1); }
+
+  /* popout files that fly out on folder hover */
+  .folder-popout {
+    position: absolute;
+    background: #28282a;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 7px; padding: 8px 10px;
+    display: flex; align-items: center; gap: 8px;
+    white-space: nowrap; pointer-events: none; z-index: 100;
+    opacity: 0;
+    transform: translateY(4px) scale(0.82);
+    transition: opacity 0.3s, transform 0.42s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+    top: 16px; left: 50%; margin-left: -60px;
+  }
+  .pop-icon { font-size: 14px; }
+  .pop-name { font-size: 10px; color: var(--text); }
+  .pop-sub  { font-size: 9px; color: var(--muted); }
+
+  .finder-folder:hover .folder-popout-a {
+    opacity: 1;
+    transform: translateY(-72px) translateX(-28px) scale(1) rotate(-9deg);
+  }
+  .finder-folder:hover .folder-popout-b {
+    opacity: 1;
+    transform: translateY(-56px) translateX(32px) scale(1) rotate(7deg);
+    transition-delay: 0.07s;
+  }
+  .finder-folder:hover .folder-popout-c {
+    opacity: 1;
+    transform: translateY(-96px) translateX(2px) scale(1) rotate(-3deg);
+    transition-delay: 0.14s;
+  }
+
+  .folder-label { font-size: 10px; color: var(--muted); text-align: center; }
+
+  .finder-files { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .finder-file {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 4px; padding: 12px; font-size: 10px; color: var(--muted);
+    cursor: none; transition: border-color 0.15s, background 0.15s;
+  }
+  .finder-file:hover { border-color: rgba(255,255,255,0.2); background: #222225; }
+  .file-thumb {
+    width: 100%; height: 60px; border-radius: 3px; margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .file-name { font-size: 10px; margin-bottom: 2px; color: var(--text); }
+  .file-meta { font-size: 9px; color: var(--muted); }
+
+  .info-panel {
+    position: absolute; top: 24px; right: 24px; width: 200px;
+    background: #242426; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5); font-size: 11px; z-index: 10;
+    animation: panelSlideIn 0.4s 1.5s backwards;
+  }
+  @keyframes panelSlideIn {
+    from { opacity: 0; transform: translateX(20px) scale(0.95); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  .info-panel-header {
+    padding: 10px 14px; background: #2e2e30;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-panel-title { font-size: 11px; color: var(--text); }
+  .info-panel-close {
+    width: 14px; height: 14px; background: var(--red); border-radius: 50%;
+    cursor: none; display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: rgba(0,0,0,0.5);
+  }
+  .info-row { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .info-row:last-child { border-bottom: none; }
+  .info-row-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .info-chip { background: rgba(242,167,184,0.15); color: var(--accent); font-size: 10px; padding: 3px 8px; border-radius: 3px; display: inline-block; }
+  .info-link { color: var(--accent); text-decoration: none; font-size: 10px; }
+  .info-link:hover { text-decoration: underline; }
+
+  /* SKILLS */
+  #skills { background: var(--bg); }
+  .skills-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; }
+  .skill-block {
+    background: var(--bg2); border: 1px solid var(--border); padding: 32px;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s, background 0.2s;
+  }
+  .skill-block.visible { opacity: 1; transform: translateY(0); }
+  .skill-block:hover { background: var(--bg3); }
+  .skill-block-title { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 18px; margin-bottom: 16px; }
+  .skill-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .skill-list li { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 8px; transition: color 0.15s; }
+  .skill-list li::before { content: '—'; color: var(--border); }
+  .skill-list li:hover { color: var(--text); }
+
+  /* EXPERIENCE */
+  #experience { background: var(--bg2); }
+  .exp-item {
+    display: grid; grid-template-columns: 1fr 220px;
+    gap: 40px; padding: 36px 0; border-bottom: 1px solid var(--border);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  .exp-item.visible { opacity: 1; transform: translateY(0); }
+  .exp-item:first-of-type { border-top: 1px solid var(--border); }
+  .exp-role { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 22px; margin-bottom: 6px; }
+  .exp-company { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .exp-bullets li { font-size: 11px; color: var(--muted); line-height: 1.75; display: flex; gap: 10px; }
+  .exp-bullets li::before { content: '—'; color: var(--border); flex-shrink: 0; }
+  .exp-meta { text-align: right; }
+  .exp-date { font-size: 10px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+  .exp-location { font-size: 10px; color: var(--subtle); }
+
+  /* CONTACT */
+  #contact {
+    background: var(--bg2); min-height: 60vh;
+    display: flex; flex-direction: column; justify-content: center;
+    border-top: 1px solid var(--border);
+  }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .contact-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 100px); line-height: 0.9; letter-spacing: -0.01em;
+  }
+  .contact-big em { font-style: italic; font-family: 'DM Serif Display', serif; color: var(--accent); }
+  .contact-links { display: flex; flex-direction: column; gap: 16px; padding-top: 16px; }
+  .contact-link {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 0; border-bottom: 1px solid var(--border);
+    text-decoration: none; color: var(--text); font-size: 13px; transition: color 0.2s;
+  }
+  .contact-link:hover { color: var(--accent); }
+  .contact-link-arrow { font-size: 20px; transition: transform 0.2s; }
+  .contact-link:hover .contact-link-arrow { transform: translate(4px, -4px); }
+
+  /* FOOTER */
+  footer {
+    padding: 24px 48px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px; color: var(--muted); letter-spacing: 0.1em;
+  }
+  .footer-handle { color: var(--accent); }
+
+  /* RESUME MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(10,10,11,0.88); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--bg2); border: 1px solid rgba(255,255,255,0.12);
+    padding: 40px; max-width: 400px; width: 90%;
+    transform: translateY(16px) scale(0.97); transition: transform 0.25s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 0.05em; margin-bottom: 10px; }
+  .modal-sub { font-size: 11px; color: var(--muted); line-height: 1.75; margin-bottom: 32px; }
+  .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+  .modal-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; cursor: none;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .modal-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(242,167,184,0.05); }
+  .modal-close {
+    margin-top: 20px; background: transparent; border: none;
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); cursor: none; transition: color 0.2s; padding: 0;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  ::-webkit-scrollbar { width: 2px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 64px 24px; }
+    .hero { padding: 0 24px 48px; }
+    .hero-scroll-hint { display: none; }
+    .project-card { grid-template-columns: 1fr; }
+    .project-left { border-right: none; border-bottom: 1px solid var(--border); }
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .exp-item { grid-template-columns: 1fr; gap: 16px; }
+    .exp-meta { text-align: left; }
+    .finder-body { height: auto; flex-direction: column; }
+    .finder-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+    .finder-grid { grid-template-columns: repeat(3,1fr); }
+    .finder-files { grid-template-columns: repeat(2,1fr); }
+    .info-panel { position: static; width: calc(100% - 24px); margin: 12px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+  }
 </style>
 </head>
+<body>
 
-  <body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
+<!-- RESUME MODAL -->
+<div class="modal-overlay" id="resumeModal">
+  <div class="modal">
+    <div class="modal-title">Resume</div>
+    <p class="modal-sub">Download Taylor's resume or view it in your browser.</p>
+    <div class="modal-actions">
+      <a href="resume.pdf" download class="modal-btn"><span>Download PDF</span><span>↓</span></a>
+      <a href="resume.pdf" target="_blank" class="modal-btn"><span>View in Browser</span><span>↗</span></a>
+    </div>
+    <button class="modal-close" id="modalClose">Dismiss</button>
+  </div>
+</div>
 
-    <div class="header">
-      
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Taylor McDonald</div>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-resume" id="resumeBtn">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+        <path d="M5.5 1v7M2 5.5l3.5 3.5L9 5.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M1 10h9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Resume
+    </button>
+  </div>
+</nav>
 
-    <script type="text/javascript" src="../../../lib/jquery.min.js"></script>
-    <script type="text/javascript" src="../../../lib/jquery.migrate.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js"></script>
-  <script type="text/javascript" src="../../../lib/jquery.scrolldepth.js"></script>
-  <script type="text/javascript" src="../../../lib/timeme.js"></script>
-  <script type="text/javascript" src="../../../lib/jquery.ui.min.js"></script>
-  <script type="text/javascript" src="../../../lib/jquery.transit.js"></script>
-  <script type="text/javascript" src="../../../lib/raphael.js"></script>
-  <script type="text/javascript" src="../../../lib/JSAV-min.js"></script>
-  <script type="text/javascript" src="_static/config.js"></script>
-  <script type="text/javascript" src="../../../lib/timeme-min.js"></script>
-  <script type="text/javascript" src="../../../lib/odsaUtils-min.js"></script>
-  <script type="text/javascript" src="../../../lib/odsaMOD-min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
-  <script type="text/javascript" src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
-  <script type="text/javascript" src="../../../lib/dataStructures.js"></script>
-  <script type="text/javascript" src="../../../lib/conceptMap.js"></script>
-  <script type="text/javascript" src="../../../lib/splice-iframe.js"></script>
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <div class="ticker-item">Taylor McDonald <span class="ticker-dot"></span> Data Science</div>
+    <div class="ticker-item"><span>×</span> NJIT · Class of 2027</div>
+    <div class="ticker-item"><span class="ticker-dot"></span> ML Engineering</div>
+    <div class="ticker-item"><span>×</span> Open to Summer 2026 Internships</div>
+    <div class="ticker-item"><span class="ticker-dot"></span> Headstarter AI Fellow</div>
+    <div class="ticker-item"><span>×</span> Building with Purpose</div>
+    <div class="ticker-item">Taylor McDonald <span class="ticker-dot"></span> Data Science</div>
+    <div class="ticker-item"><span>×</span> NJIT · Class of 2027</div>
+    <div class="ticker-item"><span class="ticker-dot"></span> ML Engineering</div>
+    <div class="ticker-item"><span>×</span> Open to Summer 2026 Internships</div>
+    <div class="ticker-item"><span class="ticker-dot"></span> Headstarter AI Fellow</div>
+    <div class="ticker-item"><span>×</span> Building with Purpose</div>
+  </div>
+</div>
 
-      
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg-text">TAYLOR</div>
+  <div class="hero-tag">Data Science · Machine Learning · Full-Stack</div>
+  <h1 class="hero-name">Taylor<br><em>McDonald.</em></h1>
+  <p class="hero-desc">
+    Data Science student at NJIT building ML-powered full-stack applications
+    in predictive modeling and real-time data systems.
+    Seeking a Summer 2026 internship in data science or ML engineering.
+  </p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn-primary">View Work</a>
+    <a href="#contact" class="btn-ghost">Get in Touch ↗</a>
+  </div>
+  <div class="hero-scroll-hint">Scroll</div>
+</section>
 
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="projects-header">
+    <div>
+      <div class="section-label">Selected Work</div>
+      <div class="section-title">PROJECTS</div>
+    </div>
+    <div class="projects-count">03 projects</div>
+  </div>
 
-      
-
-
-        <img class="leftlogo" src="_static/OpenDSALogoT64.png" alt="OpenDSA Logo"/>
-      <div class="title-wrapper">
-        <div class="title-inbetween" style="display: table-cell; vertical-align: middle;">
-          <div class="title-content">
-            <h1 class="heading" ><a href="#">
-              <span>OpenDSA Data Structures and Algorithms Modules Collection</span></a></h1><h2 class="heading" ><span> Table Of Contents </span></h2>
-          </div>
+  <!-- PawsIQ -->
+  <div class="project-card">
+    <div class="project-left">
+      <div class="project-number">01 / 03</div>
+      <div>
+        <div class="project-name">PawsIQ — Pet Services<br>Intelligence Platform</div>
+        <div class="project-tags">
+          <span class="tag accent">In Progress</span>
+          <span class="tag red">XGBoost</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">React</span>
         </div>
       </div>
     </div>
-    <div class="topnav">
-      <p>
-          <a class="abt" style="float:left;color:blue;" href="#" rel="nofollow">| About</a>&#160;&#160;
-
-        
-      <a  class="uplink" href="#">Contents</a>
-      &#160;&#160;::&#160;&#160;
-      <a  id="nextmod" href="Intro.html">0.<span class="section-number">1. </span>How to Use this System</a>&#160;&#160;»
-
-
+    <div class="project-right">
+      <p class="project-desc">
+        Demand forecasting model predicting peak walk request times by hour
+        and zip code. Dynamic pricing pipeline using Ridge Regression adjusts
+        service rates based on real-time demand signals. React dashboard with
+        churn risk scores and walker sentiment trends across 20+ simulated clients.
       </p>
+      <div class="project-stack"><span>Stack:</span> Python, XGBoost, scikit-learn, FastAPI, PostgreSQL, React</div>
+      <div>
+        <div class="project-metric">Live</div>
+        <div class="project-metric-label">Apr 2026 — Present</div>
+      </div>
+      <a href="https://github.com/euvrain" class="project-link" target="_blank">
+        View on GitHub <span class="project-link-arrow">↗</span>
+      </a>
     </div>
-     
-    <div class="content">
-      
-      
-  <script>
-if (typeof ODSA === 'undefined') { window.ODSA = {}; }
-if (typeof ODSA.SETTINGS === 'undefined') { ODSA.SETTINGS = {}; }
-ODSA.SETTINGS.DISP_MOD_COMP = false;ODSA.SETTINGS.MODULE_NAME = "index";ODSA.SETTINGS.MODULE_LONG_NAME = "Contents";ODSA.SETTINGS.MODULE_CHAPTER = ""; ODSA.SETTINGS.BUILD_DATE = "2025-10-15 12:47:16"; ODSA.SETTINGS.BUILD_CMAP = false;
-</script><section id="preface">
-<h1><span class="sectnum">Chapter 0 </span>Preface<a class="headerlink" href="#preface" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Intro.html">0.1. How to Use this System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Status.html">0.2. OpenDSA Project Content Status</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Status.html#status-report">0.2.1. Status Report</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Status.html#configuring-your-own-book">0.2.1.1. Configuring Your Own Book</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="introduction-for-data-structures-and-algorithms-courses">
-<h1><span class="sectnum">Chapter 1 </span>Introduction for Data Structures and Algorithms Courses<a class="headerlink" href="#introduction-for-data-structures-and-algorithms-courses" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="IntroDSA.html">1.1. Data Structures and Algorithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="IntroDSA.html#id1">1.1.1. Data Structures and Algorithms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="IntroDSA.html#introduction">1.1.1.1. Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroDSA.html#a-philosophy-of-data-structures">1.1.1.2. A Philosophy of Data Structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroDSA.html#selecting-a-data-structure">1.1.1.3. Selecting a Data Structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroDSA.html#introduction-summary-questions">1.1.1.4. Introduction Summary Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="IntroDSA.html#some-software-engineering-topics">1.1.2. Some Software Engineering Topics</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="biographies">
-<h1><span class="sectnum">Chapter 2 </span>Biographies<a class="headerlink" href="#biographies" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="CarlGauss.html">2.1. Spotlight: Carl Friedrich Gauss</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CarlGauss.html#id1">2.1.1. Spotlight: Carl Friedrich Gauss</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FrancisBacon.html">2.2. Spotlight: Francis Bacon</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="FrancisBacon.html#id1">2.2.1. Spotlight: Francis Bacon</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="programming-tutorials">
-<h1><span class="sectnum">Chapter 3 </span>Programming Tutorials<a class="headerlink" href="#programming-tutorials" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="cmdline.html">3.1. Command Line Basics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cmdline.html#what-s-a-cli">3.1.1. What’s A CLI?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="parameters.html">3.2. Parsing Command Line Parameters In Your Program</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html#parameters-in-programming">3.2.1. Parameters In Programming</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="eclipseparameters.html">3.3. Using Command Line Parameters in Eclipse</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="eclipseparameters.html#id1">3.3.1. Using Command Line Parameters in Eclipse</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="webcattools.html">3.4. Installing the Web-CAT Submission Plug-in for Eclipse</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="webcattools.html#introduction">3.4.1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="webcattools.html#installing-java-11">3.4.2. Installing Java 11</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="webcattools.html#downloading-the-jdk">3.4.2.1. Downloading the JDK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webcattools.html#configuring-the-eclipse-jre">3.4.2.2. Configuring the Eclipse JRE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webcattools.html#setting-the-compiler-compliance-level">3.4.2.3. Setting the Compiler Compliance Level</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="webcattools.html#installing-the-plug-in">3.4.3. Installing the Plug-in</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="webcattools.html#id1">3.4.3.1. Installing the Plug-in</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webcattools.html#final-setup">3.4.3.2. Final Setup</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="webcattools.html#installing-student-jar">3.4.4. Installing student.jar</a></li>
-<li class="toctree-l2"><a class="reference internal" href="webcattools.html#installing-formatting-support">3.4.5. Installing formatting support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="webcattools.html#eclipse-formatter">3.4.5.1. Eclipse Formatter</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webcattools.html#checkstyle-formatter">3.4.5.2. Checkstyle Formatter</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="debugmethods.html">3.5. Common Debugging Methods</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="debugmethods.html#id1">3.5.1. Common Debugging Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="debugmethods.html#print-debugging">3.5.1.1. Print Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debugmethods.html#rubber-duck-debugging">3.5.1.2. Rubber Duck Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debugmethods.html#wolf-fence-debugging">3.5.1.3. Wolf Fence Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debugmethods.html#print-debugging-vs-source-debugging">3.5.1.4. Print Debugging vs Source Debugging</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="debug.html">3.6. Debugging In Eclipse</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="debug.html#id1">3.6.1. Debugging In Eclipse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="debug.html#what-is-a-debugger">3.6.1.1. What Is A Debugger?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debug.html#debugging-terms">3.6.1.2. Debugging Terms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debug.html#debugging-a-memory-pool">3.6.1.3. Debugging A Memory Pool</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debug.html#the-eclipse-console">3.6.1.4. The Eclipse Console</a></li>
-<li class="toctree-l3"><a class="reference internal" href="debug.html#conditional-breakpoints">3.6.1.5. Conditional Breakpoints</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="scanning.html">3.7. Using the Java Scanner Class</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="scanning.html#the-scanner-class">3.7.1. The Scanner Class</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="randomaccessfile.html">3.8. Random Access Files In Java</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="randomaccessfile.html#understanding-file-i-o">3.8.1. Understanding File I/O</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="randomaccessfile.html#using-randomaccessfile-class">3.8.1.1. Using RandomAccessFile Class</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="junitstart.html">3.9. JUnit Testing And You</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="junitstart.html#getting-started">3.9.1. Getting Started</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="junitstart.html#design-considerations">3.9.1.1. Design Considerations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="junitstart.html#meaningful-tests">3.9.1.2. Meaningful Tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="junitstart.html#more-information">3.9.1.3. More Information</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="junitbasic.html">3.10. Writing JUnit Tests</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="junitbasic.html#id1">3.10.1. Writing JUnit Tests</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="junitcoverage.html">3.11. Code Coverage In JUnit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="junitcoverage.html#id1">3.11.1. Code Coverage In JUnit</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="junitcoverage.html#using-eclemma">3.11.1.1. Using EclEmma</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MTeclipse.html">3.12. Using Mutation Coverage In Eclipse</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MTeclipse.html#id1">3.12.1. Using Mutation Coverage In Eclipse</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="MTeclipse.html#using-mutation-testing">3.12.1.1. Using Mutation Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTeclipse.html#lines-not-tested">3.12.1.2. Lines Not Tested</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTeclipse.html#lines-needing-better-testing">3.12.1.3. Lines Needing Better Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTeclipse.html#mutation-summary">3.12.1.4. Mutation Summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTeclipse.html#how-do-i-recover-the-mutation-list-mutation-summary-tabs">3.12.1.5. How do I recover the “Mutation List”/”Mutation Summary” tabs?</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MTbasics.html">3.13. Mutation Testing Basics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MTbasics.html#types-of-mutants">3.13.1. Types of Mutants</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="MTbasics.html#arithmetic-operation-mutant">3.13.1.1. Arithmetic Operation Mutant</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTbasics.html#example-code-1-arithmetic-operation-mutant">3.13.1.2. Example Code 1: Arithmetic Operation Mutant</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTbasics.html#logical-expression-mutant-remove-conditionals">3.13.1.3. Logical Expression Mutant (Remove Conditionals)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTbasics.html#example-code-2-logical-expression-mutant-remove-conditionals">3.13.1.4. Example Code 2: Logical Expression Mutant (Remove Conditionals)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTbasics.html#example-code-3-multiple-mutants-in-one-evenoddcheck">3.13.1.5. Example Code 3: Multiple Mutants in One (EvenOddCheck)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MTbasics.html#example-code-4-loop-conditions-optional">3.13.1.6. Example Code 4: Loop Conditions (optional)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MTadvanced.html">3.14. Mutation Coverage Advanced Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MTadvanced.html#seeing-the-effect-bst-range-query">3.14.1. Seeing the Effect: BST Range Query</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MTadvanced.html#over-constrained-code-visiting-quadrants">3.14.2. Over-Constrained Code: Visiting Quadrants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MTadvanced.html#over-constrained-code-deleting-from-a-bst-tree">3.14.3. Over-Constrained Code: Deleting from a BST Tree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MTadvanced.html#over-constrained-code-bignum-exponents">3.14.4. Over-Constrained Code: BigNum Exponents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MTadvanced.html#bugs-not-caught-by-mutation-testing-hash-insert">3.14.5. Bugs not caught by mutation testing: Hash Insert</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="TriangleIntro.html">3.15. Testing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TriangleIntro.html#testing-vs-debugging">3.15.1. Testing vs. Debugging</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="TriangleCoverage.html">3.16. Testing for Code Coverage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TriangleCoverage.html#id1">3.16.1. Testing for Code Coverage</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BowlingIntro.html">3.17. Bowling Test Coverage Example</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BowlingIntro.html#id1">3.17.1. Bowling Test Coverage Example</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BowlingCoverage.html">3.18. Bowling Example: Testing to Code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BowlingCoverage.html#id1">3.18.1. Bowling Example Testing to Code</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="design-i">
-<h1><span class="sectnum">Chapter 4 </span>Design I<a class="headerlink" href="#design-i" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ADT.html">4.1. Abstract Data Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ADT.html#id1">4.1.1. Abstract Data Types</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="IntroOO.html">4.2. Introduction to Object-Oriented Programming</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="IntroOO.html#id1">4.2.1. Introduction to Object-Oriented Programming</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="IntroOO.html#principles-of-object-oriented-programming">4.2.1.1. Principles of Object Oriented Programming</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroOO.html#encapsulation">4.2.1.2. Encapsulation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroOO.html#inheritance">4.2.1.3. Inheritance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroOO.html#polymorphism">4.2.1.4. Polymorphism</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroOO.html#run-time-polymorphism">4.2.1.5. Run-time Polymorphism</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroOO.html#compile-time-polymorphism">4.2.1.6. Compile-time Polymorphism</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroOO.html#abstraction">4.2.1.7. Abstraction</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="IntroUML.html">4.3. The Unified Modeling Language</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="IntroUML.html#id1">4.3.1. The Unified Modeling Language</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="IntroUML.html#static-and-dynamic-diagrams">4.3.1.1. Static and Dynamic Diagrams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroUML.html#class-diagrams">4.3.1.2. Class Diagrams</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="IntroProcess.html">4.4. Software Development Processes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="IntroProcess.html#id1">4.4.1. Software Development Processes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="IntroProcess.html#waterfall-method">4.4.1.1. Waterfall Method</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroProcess.html#rational-unified-process">4.4.1.2. Rational Unified Process</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroProcess.html#other-plan-driven-approaches">4.4.1.3. Other Plan-Driven Approaches</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroProcess.html#extreme-programming-xp">4.4.1.4. eXtreme Programming (XP)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroProcess.html#crystal">4.4.1.5. Crystal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroProcess.html#scrum">4.4.1.6. Scrum</a></li>
-<li class="toctree-l3"><a class="reference internal" href="IntroProcess.html#feature-driven-development-fdd">4.4.1.7. Feature-Driven Development (FDD)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="introduction-to-pointers-in-java">
-<h1><span class="sectnum">Chapter 5 </span>Introduction to Pointers in Java<a class="headerlink" href="#introduction-to-pointers-in-java" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="PointerIntro.html">5.1. Pointers Chapter Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BasicPointers1.html">5.2. Basic References Part 1</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers1.html#pointers-and-references">5.2.1. Pointers and References</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BasicPointers1.html#what-is-a-pointer">5.2.1.1. What is a Pointer?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BasicPointers1.html#what-is-a-reference">5.2.1.2. What is a Reference?</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers1.html#data-types-in-java">5.2.2. Data Types in Java</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers1.html#referencing-and-dereferencing">5.2.3. Referencing and Dereferencing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers1.html#changepointeedatadirect">5.2.4. changePointeeDataDirect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers1.html#the-employee-class">5.2.5. The Employee Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers1.html#reference-assignments">5.2.6. Reference Assignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers1.html#circularlist1">5.2.7. circularList1</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BasicPointers2.html">5.3. Basic References Part 2</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers2.html#sharing">5.3.1. Sharing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers2.html#shallow-and-deep-copying">5.3.2. Shallow and Deep Copying</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BasicPointers2.html#what-does-it-mean-to-copy">5.3.2.1. What does it mean to copy?</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers2.html#shallow-and-deep-comparing">5.3.3. Shallow and Deep Comparing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BasicPointers2.html#bad-references">5.3.4. Bad References</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BasicPointers2.html#why-are-bad-reference-bugs-so-common">5.3.4.1. Why Are Bad Reference Bugs So Common?</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Syntax.html">5.4. Pointers Syntax</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Syntax.html#id1">5.4.1. Syntax</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Syntax.html#declaring-a-reference-variable">5.4.1.1. Declaring a Reference Variable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Syntax.html#assigning-a-pointee-to-a-reference">5.4.1.2. Assigning a pointee to a reference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Syntax.html#dereference-the-reference">5.4.1.3. Dereference the reference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Syntax.html#example-reference-code">5.4.1.4. Example Reference Code</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Syntax.html#changeheadpointer1">5.4.2. changeHeadPointer1</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Syntax.html#reference-rules-summary">5.4.2.1. Reference Rules Summary</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Syntax.html#java-references-vs-pointers">5.4.3. Java References vs Pointers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Syntax.html#how-are-references-implemented-in-the-machine">5.4.4. How Are References Implemented In The Machine?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="LocalMem.html">5.5. Local Memory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="LocalMem.html#id1">5.5.1. Local Memory</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="LocalMem.html#thanks-for-the-memory-allocation-and-deallocation">5.5.1.1. Thanks For The Memory: Allocation and Deallocation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LocalMem.html#local-parameters">5.5.1.2. Local Parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LocalMem.html#advantages-of-locals">5.5.1.3. Advantages Of Locals</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LocalMem.html#disadvantages-of-locals">5.5.1.4. Disadvantages Of Locals</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LocalMem.html#synonyms-for-local">5.5.1.5. Synonyms For “Local”</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LocalMem.html#local-memory-summary">5.5.1.6. Local Memory Summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="LocalMem.html#how-does-the-function-call-stack-work">5.5.1.7. How Does The Function Call Stack Work?</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HeapMem.html">5.6. Heap Memory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HeapMem.html#id1">5.6.1. Heap Memory</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="HeapMem.html#allocation">5.6.1.1. Allocation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="HeapMem.html#deallocation">5.6.1.2. Deallocation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="HeapMem.html#programming-the-heap">5.6.1.3. Programming the Heap</a></li>
-<li class="toctree-l3"><a class="reference internal" href="HeapMem.html#a-heap-example">5.6.1.4. A Heap Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="HeapMem.html#arrays">5.6.1.5. Arrays</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Links1.html">5.7. Link Nodes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Links1.html#id1">5.7.1. Link Nodes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Links2.html">5.8. Link Nodes Practice Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Links2.html#createlist">5.8.1. createList</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Links2.html#iterateoverlist">5.8.2. iterateOverList</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Links2.html#changepointeenext1">5.8.3. changePointeeNext1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Links2.html#addnodeathead">5.8.4. addNodeAtHead</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ExercisesPtr.html">5.9. Additional Practice Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#changeheadpointer2">5.9.1. changeHeadPointer2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#changeqpointer">5.9.2. changeQPointer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#changerpointer">5.9.3. changeRPointer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#changepointeedataindirect">5.9.4. changePointeeDataInDirect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#circularlist2">5.9.5. circularList2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#circularlist3">5.9.6. circularList3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#changepointeenext2">5.9.7. changePointeeNext2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#findvalueinlist">5.9.8. findValueInList</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#addnodeattail">5.9.9. addNodeAtTail</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#changenodesorder1">5.9.10. changeNodesOrder1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExercisesPtr.html#changenodesorder2">5.9.11. changeNodesOrder2</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="mathematical-background">
-<h1><span class="sectnum">Chapter 6 </span>Mathematical Background<a class="headerlink" href="#mathematical-background" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="MathpreIntro.html">6.1. Chapter Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="SetDef.html">6.2. Sets and Relations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SetDef.html#set-notation">6.2.1. Set Notation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="SetDef.html#relations">6.2.1.1. Relations</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="SetDef.html#equivalence-relations">6.2.2. Equivalence Relations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SetDef.html#partial-orders">6.2.3. Partial Orders</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MiscMath.html">6.3. Miscellaneous Math Notation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Logarithms.html">6.4. Logarithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Logarithms.html#id2">6.4.1. Logarithms</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Summations.html">6.5. Summations Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Summations.html#id1">6.5.1. Summations</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="RecurrenceIntro.html">6.6. An Introduction to Recurrence Relations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="RecurrenceIntro.html#recurrence-relations">6.6.1. Recurrence Relations</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Proofs.html">6.7. Mathematical Proof Techniques</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Proofs.html#id1">6.7.1. Mathematical Proof Techniques</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Proofs.html#direct-proof">6.7.1.1. Direct Proof</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Proofs.html#proof-by-contradiction">6.7.1.2. Proof by Contradiction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Proofs.html#proof-by-mathematical-induction">6.7.1.3. Proof by Mathematical Induction</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Estimation.html">6.8. Introduction to Estimation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MathpreSumm.html">6.9. Chapter Summary Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MathpreSumm.html#id1">6.9.1. Chapter Summary Questions</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="searching-i">
-<h1><span class="sectnum">Chapter 7 </span>Searching I<a class="headerlink" href="#searching-i" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="BinarySearch.html">7.1. Searching in an Array</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinarySearch.html#id1">7.1.1. Searching in an Array</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BinarySearch.html#sequential-search">7.1.1.1. Sequential Search</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BinarySearch.html#binary-search">7.1.1.2. Binary Search</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="algorithm-analysis">
-<h1><span class="sectnum">Chapter 8 </span>Algorithm Analysis<a class="headerlink" href="#algorithm-analysis" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="AnalChap.html">8.1. Chapter Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AnalPrelim.html">8.2. Problems, Algorithms, and Programs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalPrelim.html#id1">8.2.1. Problems, Algorithms, and Programs</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AnalPrelim.html#problems">8.2.1.1. Problems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalPrelim.html#algorithms">8.2.1.2. Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalPrelim.html#programs">8.2.1.3. Programs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalPrelim.html#summary">8.2.1.4. Summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalPrelim.html#summary-questions">8.2.1.5. Summary Questions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalIntro.html">8.3. Comparing Algorithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalIntro.html#id1">8.3.1. Comparing Algorithms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AnalIntro.html#introduction">8.3.1.1. Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalIntro.html#basic-operations-and-input-size">8.3.1.2. Basic Operations and Input Size</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalIntro.html#growth-rates">8.3.1.3. Growth Rates</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="AnalIntro.html#growth-rates-ordering-exercise">8.3.2. Growth Rates Ordering Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalCases.html">8.4. Best, Worst, and Average Cases</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalCases.html#id1">8.4.1. Best, Worst, and Average Cases</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalCompvsAlg.html">8.5. Faster Computer, or Faster Algorithm?</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalCompvsAlg.html#id1">8.5.1. Faster Computer, or Faster Algorithm?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalAsymptotic.html">8.6. Asymptotic Analysis and Upper Bounds</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalAsymptotic.html#id1">8.6.1. Asymptotic Analysis and Upper Bounds</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AnalAsymptotic.html#upper-bounds">8.6.1.1. Upper Bounds</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalAsymptotic.html#simplifying-rules">8.6.1.2. Simplifying Rules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalAsymptotic.html#summary">8.6.1.4. Summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalAsymptotic.html#practice-questions">8.6.1.5. Practice Questions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalLower.html">8.7. Lower Bounds and <span class="math notranslate nohighlight">\(\Theta\)</span> Notation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalLower.html#id1">8.7.1. Lower Bounds and Theta Notation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AnalLower.html#lower-bounds">8.7.1.1. Lower Bounds</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalLower.html#theta-notation">8.7.1.2. Theta Notation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalLower.html#classifying-functions">8.7.1.3. Classifying Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalLower.html#summary-exercise">8.7.1.4. Summary Exercise</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalProgram.html">8.8. Calculating Program Running Time</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalProgram.html#id1">8.8.1. Calculating Program Running Time</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AnalProgram.html#case-study-two-search-algorithms">8.8.1.1. Case Study: Two Search Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalProgram.html#binary-search-practice-exercise">8.8.1.2. Binary Search Practice Exercise</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AnalProgram.html#analyzing-binary-search">8.8.1.3. Analyzing Binary Search</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="AnalProgram.html#summary-exercise">8.8.2. Summary Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalProblem.html">8.9. Analyzing Problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalProblem.html#id1">8.9.1. Analyzing Problems</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalMisunderstanding.html">8.10. Common Misunderstandings</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalMisunderstanding.html#id1">8.10.1. Common Misunderstandings</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AnalMultiple.html">8.11. Multiple Parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AnalSpace.html">8.12. Space Bounds</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AnalTuning.html">8.13. Code Tuning and Empirical Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AnalTuning.html#id1">8.13.1. Code Tuning and Empirical Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AnalTuning.html#empirical-analysis">8.13.1.1. Empirical Analysis</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AlgAnalSummCS2.html">8.14. Algorithm Analysis Summary Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AlgAnalSummCS2.html#summary-exercise-cs2">8.14.1. Summary Exercise: CS2</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AlgAnalSummCS3.html">8.15. Algorithm Analysis Summary Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AlgAnalSummCS3.html#summary-exercise-cs3">8.15.1. Summary Exercise: CS3</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="linear-structures">
-<h1><span class="sectnum">Chapter 9 </span>Linear Structures<a class="headerlink" href="#linear-structures" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ListIntro.html">9.1. Chapter Introduction: Lists</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ListADT.html">9.2. A List ADT</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ListADT.html#id1">9.2.1. A List ADT</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ListADT.html#defining-the-adt">9.2.1.1. Defining the ADT</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ListADT.html#list-adt-programming-exercise">9.2.2. List ADT Programming Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ListArray.html">9.3. Array-Based List Implementation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ListArray.html#id1">9.3.1. Array-Based List Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ListArray.html#insert">9.3.1.1. Insert</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListArray.html#insert-practice-exericse">9.3.1.2. Insert Practice Exericse</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ListArray.html#append-and-remove">9.3.2. Append and Remove</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ListArray.html#remove-practice-exericise">9.3.2.1. Remove Practice Exericise</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ListArray.html#array-based-list-practice-questions">9.3.3. Array-based List Practice Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ListLinked.html">9.4. Linked Lists</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ListLinked.html#id1">9.4.1. Linked Lists</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ListLinked.html#why-this-has-problems">9.4.1.1. Why This Has Problems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListLinked.html#a-better-solution">9.4.1.2. A Better Solution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListLinked.html#linked-list-implementation">9.4.1.3. Linked List Implementation</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ListLinked.html#linked-list-remove">9.4.2. Linked List Remove</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ListAnalysis.html">9.5. Comparison of List Implementations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ListAnalysis.html#space-comparison">9.5.1. Space Comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ListAnalysis.html#time-comparison">9.5.2. Time Comparison</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ListAnalysis.html#practice-questions">9.5.2.1. Practice Questions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ListDouble.html">9.6. Doubly Linked Lists</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ListDouble.html#id1">9.6.1. Doubly Linked Lists</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ListDouble.html#insert">9.6.1.1. Insert</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListDouble.html#append">9.6.1.2. Append</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListDouble.html#remove">9.6.1.3. Remove</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListDouble.html#prev">9.6.1.4. Prev</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListDouble.html#mangling-pointers">9.6.1.5. Mangling Pointers</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ListElement.html">9.7. List Element Implementations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ListElement.html#id1">9.7.1. List Element Implementations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ListElement.html#homogeneity">9.7.1.1. Homogeneity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListElement.html#element-deletion">9.7.1.2. Element Deletion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ListElement.html#practice-questions">9.7.1.3. Practice Questions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="StackArray.html">9.8. Stacks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="StackArray.html#stack-terminology-and-implementation">9.8.1. Stack Terminology and Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="StackArray.html#array-based-stacks">9.8.1.1. Array-Based Stacks</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="StackArray.html#pop">9.8.2. Pop</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="StackLinked.html">9.9. Linked Stacks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="StackLinked.html#linked-stack-implementation">9.9.1. Linked Stack Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="StackLinked.html#linked-stack-push">9.9.1.1. Linked Stack Push</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="StackLinked.html#linked-stack-pop">9.9.2. Linked Stack Pop</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="StackLinked.html#comparison-of-array-based-and-linked-stacks">9.9.2.1. Comparison of Array-Based and Linked Stacks</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Freelist.html">9.10. Freelists</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Freelist.html#id1">9.10.1. Freelists</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="StackRecur.html">9.11. Implementing Recursion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Queue.html">9.12. Queues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Queue.html#queue-terminology-and-implementation">9.12.1. Queue Terminology and Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Queue.html#array-based-queues">9.12.1.1. Array-Based Queues</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Queue.html#the-circular-queue">9.12.1.2. The Circular Queue</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Queue.html#array-based-queue-implementation">9.12.1.3. Array-based Queue Implementation</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Queue.html#array-based-dequeue-practice">9.12.2. Array-based Dequeue Practice</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="QueueLinked.html">9.13. Linked Queues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="QueueLinked.html#id1">9.13.1. Linked Queues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QueueLinked.html#linked-dequeue">9.13.2. Linked Dequeue</a></li>
-<li class="toctree-l2"><a class="reference internal" href="QueueLinked.html#comparison-of-array-based-and-linked-queues">9.13.3. Comparison of Array-Based and Linked Queues</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="QueueLinked.html#stack-and-queue-summary-questions">9.13.3.1. Stack and Queue Summary Questions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ListSumm.html">9.14. Linear Structure Summary Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ListSumm.html#practice-questions">9.14.1. Practice Questions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ListSumm.html#chapter-review-questions">9.14.2. Chapter Review Questions</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="recursion">
-<h1><span class="sectnum">Chapter 10 </span>Recursion<a class="headerlink" href="#recursion" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="RecIntro.html">10.1. Introduction to Recursion</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="RecIntro.html#introduction">10.1.1. Introduction</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Write.html">10.2. Writing a recursive function</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Write.html#id1">10.2.1. Writing a recursive function</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="CodeCompletionEx.html">10.3. Code Completion Practice Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#introduction">10.3.1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-largest">10.3.2. Recursion Programming Exercise: Largest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-multiply">10.3.3. Recursion Programming Exercise: Multiply</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-gcd">10.3.4. Recursion Programming Exercise: GCD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-log">10.3.5. Recursion Programming Exercise: log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-cummulative-sum">10.3.6. Recursion Programming Exercise: Cummulative Sum</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-add-odd-values">10.3.7. Recursion Programming Exercise: Add odd values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-sum-of-the-digits">10.3.8. Recursion Programming Exercise: Sum Of the Digits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CodeCompletionEx.html#recursion-programming-exercise-count-characters">10.3.9. Recursion Programming Exercise: Count Characters</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HarderWrite.html">10.4. Writing More Sophisticated Recursive Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HarderCodeCompletionEx.html">10.5. Intermediate Recursion Code Completion Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HarderCodeCompletionEx.html#recursion-programming-exercise-minimum-of-array">10.5.1. Recursion Programming Exercise: Minimum of array</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HarderCodeCompletionEx.html#recursion-programming-exercise-is-reverse">10.5.2. Recursion Programming Exercise: Is Reverse</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HarderCodeCompletionEx.html#recursion-programming-exercise-decimal-to-binary">10.5.3. Recursion Programming Exercise: Decimal to Binary</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="WritingEx.html">10.6. Writing Practice Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="WritingEx.html#recursion-programming-exercise-cannonballs">10.6.1. Recursion Programming Exercise: Cannonballs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="WritingEx.html#recursion-programming-exercise-check-palindrome">10.6.2. Recursion Programming Exercise: Check Palindrome</a></li>
-<li class="toctree-l2"><a class="reference internal" href="WritingEx.html#recursion-programming-exercise-subset-sum">10.6.3. Recursion Programming Exercise: Subset Sum</a></li>
-<li class="toctree-l2"><a class="reference internal" href="WritingEx.html#recursion-programming-exercise-pascal-triangle">10.6.4. Recursion Programming Exercise: Pascal Triangle</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Trace.html">10.7. Tracing Recursive Code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Trace.html#id1">10.7.1. Tracing Recursive Code</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Trace.html#a-domino-analogy">10.7.1.1. A Domino Analogy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Trace.html#towers-of-hanoi">10.7.1.2. Towers of Hanoi</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="TracingEx.html">10.8. Recursion Code Tracing Practice Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TracingEx.html#forward-flow-tracing-exercises">10.8.1. Forward Flow Tracing Exercises</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TracingEx.html#backward-flow-tracing-exercises">10.8.2. Backward Flow Tracing Exercises</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TracingEx.html#find-error-tracing-exercises">10.8.3. Find Error Tracing Exercises</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TracingEx.html#two-recursive-calls-tracing-exercises">10.8.4. Two Recursive Calls Tracing Exercises</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TracingEx.html#how-many-times-tracing-exercises">10.8.5. How Many Times Tracing Exercises</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TracingEx.html#harder-tracing-exercises">10.8.6. Harder Tracing Exercises</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="RecSummaryEx.html">10.9. Recursion Summary Questions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="RecSummaryEx.html#id1">10.9.1. Recursion Summary Questions</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="design-ii">
-<h1><span class="sectnum">Chapter 11 </span>Design II<a class="headerlink" href="#design-ii" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="DesignPatterns.html">11.1. Design Patterns</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="DesignPatterns.html#id1">11.1.1. Design Patterns</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="DesignPatterns.html#flyweight">11.1.1.1. Flyweight</a></li>
-<li class="toctree-l3"><a class="reference internal" href="DesignPatterns.html#visitor">11.1.1.2. Visitor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="DesignPatterns.html#composite">11.1.1.3. Composite</a></li>
-<li class="toctree-l3"><a class="reference internal" href="DesignPatterns.html#strategy">11.1.1.4. Strategy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="DesignPatterns.html#summary-questions">11.1.1.5. Summary Questions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="DesignAltList.html">11.2. Alternative List ADT Designs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Comparison.html">11.3. Comparing Records</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Comparison.html#id1">11.3.1. Comparing Records</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Dictionary.html">11.4. The Dictionary ADT</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Dictionary.html#id1">11.4.1. The Dictionary ADT</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="binary-trees">
-<h1><span class="sectnum">Chapter 12 </span>Binary Trees<a class="headerlink" href="#binary-trees" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTreeIntro.html">12.1. Binary Trees Chapter Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTree.html">12.2. Binary Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTree.html#definitions-and-properties">12.2.1. Definitions and Properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTree.html#practice-questions">12.2.2. Practice Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="RecursiveDS.html">12.3. Binary Tree as a Recursive Data Structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="RecursiveDS.html#id1">12.3.1. Binary Tree as a Recursive Data Structure</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTreeFullThm.html">12.4. The Full Binary Tree Theorem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTreeTraversal.html">12.5. Binary Tree Traversals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeTraversal.html#id1">12.5.1. Binary Tree Traversals</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BinaryTreeTraversal.html#preorder-traversal">12.5.1.1. Preorder Traversal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BinaryTreeTraversal.html#postorder-traversal">12.5.1.2. Postorder Traversal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BinaryTreeTraversal.html#inorder-traversal">12.5.1.3. Inorder Traversal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BinaryTreeTraversal.html#implementation">12.5.1.4. Implementation</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeTraversal.html#postorder-traversal-practice">12.5.2. Postorder Traversal Practice</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeTraversal.html#inorder-traversal-practice">12.5.3. Inorder Traversal Practice</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeTraversal.html#summary-questions">12.5.4. Summary Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="WritingTraversals.html">12.6. Implementing Tree Traversals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="WritingTraversals.html#id1">12.6.1. Implementing Tree Traversals</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="WritingTraversals.html#base-case">12.6.1.1. Base Case</a></li>
-<li class="toctree-l3"><a class="reference internal" href="WritingTraversals.html#the-recursive-call">12.6.1.2. The Recursive Call</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="WritingTraversals.html#binary-tree-increment-by-one-exercise">12.6.2. Binary Tree Increment By One Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTreeInfFlw.html">12.7. Information Flow in Recursive Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#id1">12.7.1. Information Flow in Recursive Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BinaryTreeInfFlw.html#local">12.7.1.1. Local</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BinaryTreeInfFlw.html#passing-down-information">12.7.1.2. Passing Down Information</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-set-depth-exercise">12.7.2. Binary Tree Set Depth Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#collect-and-return">12.7.3. Collect-and-return</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-check-sum-exercise">12.7.4. Binary Tree Check Sum Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-leaf-nodes-count-exercise">12.7.5. Binary Tree Leaf Nodes Count Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-sum-nodes-exercise">12.7.6. Binary Tree Sum Nodes Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#combining-information-flows">12.7.7. Combining Information Flows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-check-value-exercise">12.7.8. Binary Tree Check Value Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#combination-problems">12.7.9. Combination Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-height-exercise">12.7.10. Binary Tree Height Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-get-difference-exercise">12.7.11. Binary Tree Get Difference Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeInfFlw.html#binary-tree-has-path-sum-exercise">12.7.12. Binary Tree Has Path Sum Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTreeImpl.html">12.8. Binary Tree Node Implementations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeImpl.html#id1">12.8.1. Binary Tree Node Implementations</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Composite.html">12.9. Composite-based Expression Tree</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Composite.html#id1">12.9.1. Composite-based Expression Tree</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTreeNodeSpace.html">12.10. Binary Tree Space Requirements</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeNodeSpace.html#id1">12.10.1. Binary Tree Space Requirements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BST.html">12.11. Binary Search Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BST.html#binary-search-tree-definition">12.11.1. Binary Search Tree Definition</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BST.html#bst-search">12.11.1.1. BST Search</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="BST.html#bst-insert">12.11.2. BST Insert</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BST.html#bst-remove">12.11.3. BST Remove</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BST.html#bst-analysis">12.11.4. BST Analysis</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BSTDict.html">12.12. Dictionary Implementation Using a BST</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryTreeGuidedInfFlw.html">12.13. Binary Tree Guided Information Flow</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeGuidedInfFlw.html#id1">12.13.1. Binary Tree Guided Information Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BinaryTreeGuidedInfFlw.html#binary-search-tree-small-count-exercise">12.13.2. Binary Search Tree Small Count Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MultipleBinaryTrees.html">12.14. Multiple Binary Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MultipleBinaryTrees.html#mirror-image-binary-trees-exercise">12.14.1. Mirror Image Binary Trees Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MultipleBinaryTrees.html#same-binary-tree-exercise">12.14.2. Same Binary Tree Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MultipleBinaryTrees.html#structurally-identical-binary-trees-exercise">12.14.3. Structurally Identical Binary Trees Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BSTCheck.html">12.15. A Hard Information Flow Problem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CompleteTree.html">12.16. Array Implementation for Complete Binary Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CompleteTree.html#id1">12.16.1. Array Implementation for Complete Binary Trees</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Heaps.html">12.17. Heaps and Priority Queues</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Heaps.html#id1">12.17.1. Heaps and Priority Queues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Heaps.html#building-a-heap">12.17.2. Building a Heap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Heaps.html#removing-from-the-heap-or-updating-an-object-s-priority">12.17.3. Removing from the heap or updating an object’s priority</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Heaps.html#priority-queues">12.17.4. Priority Queues</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Huffman.html">12.18. Huffman Coding Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Huffman.html#id1">12.18.1. Huffman Coding Trees</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Huffman.html#building-huffman-coding-trees">12.18.1.1. Building Huffman Coding Trees</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Huffman.html#decoding">12.18.1.2. Decoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Huffman.html#how-efficient-is-huffman-coding">12.18.1.3. How efficient is Huffman coding?</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="TreeTrie.html">12.19. Trees versus Tries</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TreeTrie.html#id1">12.19.1. Trees versus Tries</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HuffProof.html">12.20. Proof of Optimality for Huffman Coding</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HuffProof.html#id1">12.20.1. Proof of Optimality for Huffman Coding</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BinaryChapSumm.html">12.21. Binary Tree Chapter Summary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinaryChapSumm.html#summary-questions">12.21.1. Summary Questions</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="sorting">
-<h1><span class="sectnum">Chapter 13 </span>Sorting<a class="headerlink" href="#sorting" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="InSort.html">13.1. Chapter Introduction: Sorting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="SortNotation.html">13.2. Sorting Terminology and Notation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SortNotation.html#id1">13.2.1. Sorting Terminology and Notation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="InsertionSort.html">13.3. Insertion Sort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="InsertionSort.html#id1">13.3.1. Insertion Sort</a></li>
-<li class="toctree-l2"><a class="reference internal" href="InsertionSort.html#insertion-sort-analysis">13.3.2. Insertion Sort Analysis</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BubbleSort.html">13.4. Bubble Sort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BubbleSort.html#id1">13.4.1. Bubble Sort</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BubbleSort.html#bubble-sort-analysis">13.4.2. Bubble Sort Analysis</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SelectionSort.html">13.5. Selection Sort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SelectionSort.html#id1">13.5.1. Selection Sort</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SelectionSort.html#selection-sort-analysis">13.5.2. Selection Sort Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SelectionSort.html#pointer-swapping">13.5.3. Pointer Swapping</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ExchangeSort.html">13.6. The Cost of Exchange Sorting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ExchangeSort.html#id1">13.6.1. The Cost of Exchange Sorting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ExchangeSort.html#analysis">13.6.2. Analysis</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SortOpt.html">13.7. Optimizing Sort Algorithms with Code Tuning</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SortOpt.html#code-tuning-for-simple-sorting-algorithms">13.7.1. Code Tuning for Simple Sorting Algorithms</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Shellsort.html">13.8. Shellsort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Shellsort.html#id2">13.8.1. Shellsort</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Shellsort.html#putting-it-together">13.8.2. Putting It Together</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Shellsort.html#shellsort-practice-exercise">13.8.3. Shellsort Practice Exercise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Shellsort.html#optimizing-shellsort">13.8.4. Optimizing Shellsort</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Shellsort.html#shellsort-summary-questions">13.8.5. Shellsort Summary Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Mergesort.html">13.9. Mergesort Concepts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Mergesort.html#id1">13.9.1. Mergesort Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Mergesort.html#mergesort-practice-exercise">13.9.2. Mergesort Practice Exercise</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MergesortImpl.html">13.10. Implementing Mergesort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MergesortImpl.html#id1">13.10.1. Implementing Mergesort</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Quicksort.html">13.11. Quicksort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Quicksort.html#introduction">13.11.1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Quicksort.html#partition">13.11.2. Partition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Quicksort.html#putting-it-together">13.11.3. Putting It Together</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Quicksort.html#quicksort-analysis">13.11.4. Quicksort Analysis</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Heapsort.html">13.12. Heapsort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Heapsort.html#id2">13.12.1. Heapsort</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Heapsort.html#heapsort-proficiency-practice">13.12.2. Heapsort Proficiency Practice</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Heapsort.html#heapsort-analysis">13.12.3. Heapsort Analysis</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BinSort.html">13.13. Binsort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BinSort.html#id2">13.13.1. Binsort</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="RadixSort.html">13.14. Radix Sort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="RadixSort.html#id1">13.14.1. Radix Sort</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RadixSort.html#array-based-radix-sort">13.14.2. Array-based Radix Sort</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="RadixSort.html#radix-sort-analysis">13.14.2.1. Radix Sort Analysis</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SortingEmpirical.html">13.15. An Empirical Comparison of Sorting Algorithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SortingEmpirical.html#id1">13.15.1. An Empirical Comparison of Sorting Algorithms</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SortingLowerBound.html">13.16. Lower Bounds for Sorting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SortingLowerBound.html#id1">13.16.1. Lower Bounds for Sorting</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SortSumm.html">13.17. Sorting Summary Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SortSumm.html#id1">13.17.1. Sorting Summary Exercises</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="file-processing">
-<h1><span class="sectnum">Chapter 14 </span>File Processing<a class="headerlink" href="#file-processing" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="FileProc.html">14.1. Chapter Introduction: File Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Secondary.html">14.2. Primary versus Secondary Storage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Diskdrive.html">14.3. Disk Drives</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Diskdrive.html#id1">14.3.1. Disk Drives</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Diskdrive.html#disk-drive-architecture">14.3.1.1. Disk Drive Architecture</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Diskdrive.html#disk-access-costs">14.3.1.2. Disk Access Costs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Diskdrive.html#notes">14.3.1.3. Notes</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BuffPool.html">14.4. Buffer Pools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BuffPool.html#id1">14.4.1. Buffer Pools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BuffPool.html#replacement-strategies">14.4.1.1. Replacement Strategies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BuffPool.html#the-dirty-bit">14.4.1.2. The Dirty Bit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BuffPool.html#implementing-buffer-pools">14.4.1.3. Implementing Buffer Pools</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FileProg.html">14.5. The Programmer’s View of Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ExternalSort.html">14.6. External Sorting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ExternalSort.html#id1">14.6.1. External Sorting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ExternalSort.html#simple-approaches-to-external-sorting">14.6.1.1. Simple Approaches to External Sorting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ExternalSort.html#improving-performance">14.6.1.2. Improving Performance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ExternalSort.html#replacement-selection">14.6.1.3. Replacement Selection</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="ExternalSort.html#multiway-merging">14.6.2. Multiway Merging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ExternalSort.html#empirical-results">14.6.2.1. Empirical Results</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ExternalSort.html#summary">14.6.2.2. Summary</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="hashing">
-<h1><span class="sectnum">Chapter 15 </span>Hashing<a class="headerlink" href="#hashing" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="HashIntro.html">15.1. Introduction to Hashing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashIntro.html#introduction">15.1.1. Introduction</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HashFunc.html">15.2. Hash Function Principles</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashFunc.html#id1">15.2.1. Hash Function Principles</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HashFuncExamp.html">15.3. Sample Hash Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashFuncExamp.html#id1">15.3.1. Sample Hash Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="HashFuncExamp.html#simple-mod-function">15.3.1.1. Simple Mod Function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="HashFuncExamp.html#binning">15.3.1.2. Binning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="HashFuncExamp.html#the-mid-square-method">15.3.1.3. The Mid-Square Method</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="HashFuncExamp.html#a-simple-hash-function-for-strings">15.3.2. A Simple Hash Function for Strings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HashFuncExamp.html#string-folding">15.3.3. String Folding</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HashFuncExamp.html#hash-function-practice">15.3.4. Hash Function Practice</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HashFuncExamp.html#hash-function-review-questions">15.3.5. Hash Function Review Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="OpenHash.html">15.4. Open Hashing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="OpenHash.html#id1">15.4.1. Open Hashing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BucketHash.html">15.5. Bucket Hashing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BucketHash.html#id1">15.5.1. Bucket Hashing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BucketHash.html#an-alternate-approach">15.5.2. An Alternate Approach</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HashCSimple.html">15.6. Collision Resolution</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashCSimple.html#id1">15.6.1. Collision Resolution</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="HashCSimple.html#the-problem-with-linear-probing">15.6.1.1. The Problem with Linear Probing</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HashCImproved.html">15.7. Improved Collision Resolution</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashCImproved.html#linear-probing-by-steps">15.7.1. Linear Probing by Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HashCImproved.html#pseudo-random-probing">15.7.2. Pseudo-Random Probing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HashCImproved.html#quadratic-probing">15.7.3. Quadratic Probing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HashCImproved.html#double-hashing">15.7.4. Double Hashing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HashAnal.html">15.8. Analysis of Closed Hashing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashAnal.html#id1">15.8.1. Analysis of Closed Hashing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HashDel.html">15.9. Hahing Deletion</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashDel.html#deletion">15.9.1. Deletion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HashDel.html#hashing-deletion-summary-questions">15.9.2. Hashing Deletion Summary Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="HashSumm.html">15.10. Hashing Chapter Summary Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HashSumm.html#hashing-review">15.10.1. Hashing Review</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="memory-management">
-<h1><span class="sectnum">Chapter 16 </span>Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="MemmanIntro.html">16.1. Chapter Introduction: Memory Management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Dynamic.html">16.2. Dynamic Storage Allocation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Dynamic.html#id1">16.2.1. Dynamic Storage Allocation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SequentialFit.html">16.3. Sequential-Fit Methods</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SequentialFit.html#id1">16.3.1. Sequential-Fit Methods</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FirstFit.html">16.4. First Fit Memory Allocation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="FirstFit.html#first-fit">16.4.1. First Fit</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="CircularFit.html">16.5. Circular First Fit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CircularFit.html#id1">16.5.1. Circular First Fit</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BestFit.html">16.6. Best Fit Memory Manager</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BestFit.html#best-fit">16.6.1. Best Fit</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="WorstFit.html">16.7. Worst Fit Memory Manager</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="WorstFit.html#worst-fit">16.7.1. Worst Fit</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MMPerformance.html">16.8. Sequential Fit Peformance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MMPerformance.html#id1">16.8.1. Sequential Fit Peformance</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Buddy.html">16.9. Buddy Method and Other Memory Allocation Methods</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Buddy.html#other-memory-allocation-methods">16.9.1. Other Memory Allocation Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Buddy.html#buddy-methods">16.9.1.1. Buddy Methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Buddy.html#other-methods">16.9.1.2. Other Methods</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Garbage.html">16.10. Failure Policies and Garbage Collection</a></li>
-</ul>
-</div>
-</section>
-<section id="indexing">
-<h1><span class="sectnum">Chapter 17 </span>Indexing<a class="headerlink" href="#indexing" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="IndexIntro.html">17.1. Indexing Chapter Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="LinearIndexing.html">17.2. Linear Indexing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="LinearIndexing.html#id1">17.2.1. Linear Indexing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ISAM.html">17.3. ISAM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TreeIndexing.html">17.4. Tree-based Indexing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TreeIndexing.html#id1">17.4.1. Tree-based Indexing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="TwoThreeTree.html">17.5. 2-3 Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TwoThreeTree.html#id1">17.5.1. 2-3 Trees</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BTree.html">17.6. B-Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BTree.html#id1">17.6.1. B-Trees</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BTree.html#id2">17.6.1.1. B+ Trees</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BTree.html#b-tree-analysis">17.6.1.2. B-Tree Analysis</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="IndexingSumm.html">17.7. Indexing Summary Exercises</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="IndexingSumm.html#indexing-summary">17.7.1. Indexing Summary</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="general-trees">
-<h1><span class="sectnum">Chapter 18 </span>General Trees<a class="headerlink" href="#general-trees" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="GenTreeIntro.html">18.1. General Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GenTreeIntro.html#id1">18.1.1. General Trees</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeIntro.html#general-tree-definitions-and-terminology">18.1.1.1. General Tree Definitions and Terminology</a></li>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeIntro.html#an-adt-for-general-tree-nodes">18.1.1.2. An ADT for General Tree Nodes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeIntro.html#general-tree-traversals">18.1.1.3. General Tree Traversals</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="UnionFind.html">18.2. Union/Find and the Parent Pointer Implementation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="UnionFind.html#the-union-find-problem">18.2.1. The Union/Find Problem</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="UnionFind.html#parent-pointer-trees">18.2.1.1. Parent Pointer Trees</a></li>
-<li class="toctree-l3"><a class="reference internal" href="UnionFind.html#equivalence-classes">18.2.1.2. Equivalence Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="UnionFind.html#weighted-union">18.2.1.3. Weighted Union</a></li>
-<li class="toctree-l3"><a class="reference internal" href="UnionFind.html#path-compression">18.2.1.4. Path Compression</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SequentialRep.html">18.3. Sequential Tree Representations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SequentialRep.html#id1">18.3.1. Sequential Tree Representations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SequentialRep.html#alternative-sequential-representation">18.3.2. Alternative Sequential Representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SequentialRep.html#bit-vector-representation">18.3.3. Bit Vector Representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SequentialRep.html#general-tree-sequential-representation">18.3.4. General Tree Sequential Representation</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="graphs">
-<h1><span class="sectnum">Chapter 19 </span>Graphs<a class="headerlink" href="#graphs" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="GraphIntro.html">19.1. Graphs Chapter Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GraphIntro.html#graph-terminology-and-implementation">19.1.1. Graph Terminology and Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="GraphIntro.html#graph-representations">19.1.1.1. Graph Representations</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="GraphIntro.html#graph-terminology-questions">19.1.2. Graph Terminology Questions</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="GraphImpl.html">19.2. Graph Implementations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GraphTraversal.html">19.3. Graph Traversals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GraphTraversal.html#id1">19.3.1. Graph Traversals</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="GraphTraversal.html#depth-first-search">19.3.1.1. Depth-First Search</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="GraphTraversal.html#breadth-first-search">19.3.2. Breadth-First Search</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="GraphTopsort.html">19.4. Topological Sort</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GraphTopsort.html#id1">19.4.1. Topological Sort</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="GraphTopsort.html#depth-first-solution">19.4.1.1. Depth-first solution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="GraphTopsort.html#queue-based-solution">19.4.1.2. Queue-based Solution</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="GraphShortest.html">19.5. Shortest-Paths Problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GraphShortest.html#id1">19.5.1. Shortest-Paths Problems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="GraphShortest.html#single-source-shortest-paths">19.5.1.1. Single-Source Shortest Paths</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="MCST.html">19.6. Minimal Cost Spanning Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MCST.html#id1">19.6.1. Minimal Cost Spanning Trees</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="MCST.html#prim-s-algorithm">19.6.1.1. Prim’s Algorithm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="MCST.html#prim-s-algorithm-alternative-implementation">19.6.1.2. Prim’s Algorithm Alternative Implementation</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Kruskal.html">19.7. Kruskal’s Algorithm</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Kruskal.html#id1">19.7.1. Kruskal’s Algorithm</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Floyd.html">19.8. All-Pairs Shortest Paths</a></li>
-</ul>
-</div>
-</section>
-<section id="spatial-data-structures">
-<h1><span class="sectnum">Chapter 20 </span>Spatial Data Structures<a class="headerlink" href="#spatial-data-structures" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Spatial.html">20.1. Spatial Data Structures</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Spatial.html#id1">20.1.1. Spatial Data Structures</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Spatial.html#multdimensional-keys">20.1.1.1. Multdimensional Keys</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="PRquadtree.html">20.2. The PR Quadtree</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="PRquadtree.html#id1">20.2.1. The PR Quadtree</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="KDtree.html">20.3. KD Trees</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="KDtree.html#id1">20.3.1. KD Trees</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Bintree.html">20.4. The Bintree</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Bintree.html#id1">20.4.1. The Bintree</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Bintree.html#implementation-concerns">20.4.1.1. Implementation Concerns</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="OtherSpatial.html">20.5. Other Spatial Data Structures</a></li>
-</ul>
-</div>
-</section>
-<section id="senior-algorithms-course">
-<h1><span class="sectnum">Chapter 21 </span>Senior Algorithms Course<a class="headerlink" href="#senior-algorithms-course" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="AAIntro.html">21.1. Data and Algorithm Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AAIntro.html#introduction">21.1.1. Introduction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AAIntro.html#prerequisites">21.1.1.1. Prerequisites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AAIntro.html#what-we-will-do">21.1.1.2. What we will do</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AAIntro.html#process">21.1.1.3. Process</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ProblemSolving.html">21.2. An Introduction to Problem Solving</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ProblemSolving.html#id1">21.2.1. An Introduction to Problem Solving</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ProblemSolving.html#investigation-and-argument">21.2.1.1. Investigation and Argument</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ProblemSolving.html#heuristics-for-problem-solving-in-the-small">21.2.1.2. Heuristics for Problem Solving “In the Small”</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ProblemSolving.html#problem-solving-in-the-large">21.2.1.3. Problem Solving “In the Large”</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ProblemSolving.html#pairs-problem-solving">21.2.1.4. Pairs Problem Solving</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ProblemSolving.html#errors-in-reasoning">21.2.1.5. Errors in Reasoning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ProblemSolving.html#references">21.2.1.6. References</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AAOverview.html">21.3. Semester Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AAOverview.html#id1">21.3.1. Semester Overview</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="AAOverview.html#modeling-algorithm-cost">21.3.1.1. Modeling Algorithm Cost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="AAOverview.html#big-issues">21.3.1.2. Big Issues</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="AAOverview.html#acknowledgement">21.3.2. Acknowledgement</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="TOH.html">21.4. Introduction to Analyzing a Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TOH.html#introduction">21.4.1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TOH.html#towers-of-hanoi">21.4.2. Towers of Hanoi</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="TOH.html#the-model">21.4.2.1. The Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="TOH.html#finding-an-algorithm">21.4.2.2. Finding an Algorithm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="TOH.html#analysis-of-the-algorithm">21.4.2.3. Analysis of the Algorithm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="TOH.html#lower-bound-for-the-problem">21.4.2.4. Lower Bound for the Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="TOH.html#new-models">21.4.2.5. New Models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="TOH.html#putting-it-all-together">21.4.2.6. Putting it all Together</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="TOH.html#acknowledgement">21.4.3. Acknowledgement</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BoundsReview.html">21.5. Bounds Review</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BoundsReview.html#id1">21.5.1. Bounds Review</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="BoundsReview.html#analyzing-problems">21.5.1.1. Analyzing Problems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="BoundsReview.html#modeling-the-inputs">21.5.1.2. Modeling the Inputs</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="GrowthRate.html">21.6. Growth Rates Review</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GrowthRate.html#id1">21.6.1. Growth Rates Review</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="GrowthRate.html#asymptotic-notation">21.6.1.1. Asymptotic Notation</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AdvSumm.html">21.7. Summation Techniques</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Recurrence.html">21.8. Solving Recurrence Relations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Recurrence.html#id1">21.8.1. Solving Recurrence Relations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Recurrence.html#estimating-upper-and-lower-bounds">21.8.1.1. Estimating Upper and Lower Bounds</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Recurrence.html#expanding-recurrences">21.8.1.2. Expanding Recurrences</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Recurrence.html#divide-and-conquer-recurrences">21.8.1.3. Divide-and-Conquer Recurrences</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Recurrence.html#average-case-analysis-of-quicksort">21.8.1.4. Average-Case Analysis of Quicksort</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="searching">
-<h1><span class="sectnum">Chapter 22 </span>Searching<a class="headerlink" href="#searching" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="SearchIntro.html">22.1. Chapter Introduction: Search</a></li>
-<li class="toctree-l1"><a class="reference internal" href="UnsortedSearch.html">22.2. Analyzing Search in Unsorted Lists</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="UnsortedSearch.html#id1">22.2.1. Analyzing Search in Unsorted Lists</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="UnsortedSearch.html#lower-bounds-proofs">22.2.1.1. Lower Bounds Proofs</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SortedSearch.html">22.3. Search in Sorted Arrays</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SortedSearch.html#analysis">22.3.1. Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="SortedSearch.html#jump-search">22.3.1.1. Jump Search</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SortedSearch.html#binary-search">22.3.1.2. Binary Search</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SortedSearch.html#lower-bounds-proof">22.3.1.3. Lower Bounds Proof</a></li>
-<li class="toctree-l3"><a class="reference internal" href="SortedSearch.html#interpolation-and-quadratic-binary-search">22.3.1.4. Interpolation and Quadratic Binary Search</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SelfOrg.html">22.4. Self-Organizing Lists</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SelfOrg.html#introduction">22.4.1. Introduction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="SelfOrg.html#frequency-count">22.4.1.1. Frequency Count</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="SelfOrg.html#move-to-front">22.4.2. Move to Front</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SelfOrg.html#transpose">22.4.3. Transpose</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="SelfOrg.html#an-example">22.4.3.1. An Example</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SetSearch.html">22.5. Bit Vectors for Representing Sets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PerfectHash.html">22.6. Perfect Hashing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="PerfectHash.html#id1">22.6.1. Perfect Hashing</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="lower-bounds">
-<h1><span class="sectnum">Chapter 23 </span>Lower Bounds<a class="headerlink" href="#lower-bounds" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="BoundMax.html">23.1. Finding the Maximum Value</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BoundMax.html#id1">23.1.1. Finding the Maximum Value</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BoundMax.html#acknowledgement">23.1.2. Acknowledgement</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BoundAdversary.html">23.2. Adversarial Lower Bounds Proofs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BoundAdversary.html#acknowledgement">23.2.1. Acknowledgement</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BoundState.html">23.3. State Space Lower Bounds Proofs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BoundState.html#acknowledgement">23.3.1. Acknowledgement</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="BoundiBest.html">23.4. Finding the <span class="math notranslate nohighlight">\(i\)</span> th Best Element</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BoundiBest.html#acknowledgement">23.4.1. Acknowledgement</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SortingOptimal.html">23.5. Optimal Sorting</a></li>
-</ul>
-</div>
-</section>
-<section id="number-problems">
-<h1><span class="sectnum">Chapter 24 </span>Number Problems<a class="headerlink" href="#number-problems" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Numeric.html">24.1. Number Problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Numeric.html#id1">24.1.1. Number Problems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Numeric.html#introduction">24.1.1.1. Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Numeric.html#exponentiation">24.1.1.2. Exponentiation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Numeric.html#largest-common-factor">24.1.1.3. Largest Common Factor</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Transform.html">24.2. The Transformation Concept</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Transform.html#the-transformation-concept-integer-multiplication">24.2.1. The Transformation Concept: Integer Multiplication</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Transform.html#polynomial-multiplication">24.2.2. Polynomial Multiplication</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FFT.html">24.3. The Fast Fourier Transform</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="FFT.html#id1">24.3.1. The Fast Fourier Transform</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="probabilistic-algorithms">
-<h1><span class="sectnum">Chapter 25 </span>Probabilistic Algorithms<a class="headerlink" href="#probabilistic-algorithms" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Probabilistic.html">25.1. Introduction to Probabilistic Algorithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Probabilistic.html#probabilistic-algorithms">25.1.1. Probabilistic Algorithms</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Primes.html">25.2. Finding Prime Numbers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RandomNums.html">25.3. Random Numbers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="RandomNums.html#id1">25.3.1. Random Numbers</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SkipList.html">25.4. Skip Lists</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SkipList.html#id1">25.4.1. Skip Lists</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="search-structures">
-<h1><span class="sectnum">Chapter 26 </span>Search Structures<a class="headerlink" href="#search-structures" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="BalancedTree.html">26.1. Balanced Trees</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AVL.html">26.2. The AVL Tree</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Splay.html">26.3. The Splay Tree</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RedBlack.html">26.4. The Red-Black Tree</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="RedBlack.html#exercise-1">26.4.1. Exercise 1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RedBlack.html#exercise-2">26.4.2. Exercise 2</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="miscellaneous">
-<h1><span class="sectnum">Chapter 27 </span>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Sparse.html">27.1. The Sparse Matrix</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DynamicProgramming.html">27.2. Dynamic Programming</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="DynamicProgramming.html#id1">27.2.1. Dynamic Programming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynamicProgramming.html#computing-fibonacci-numbers">27.2.2. Computing Fibonacci Numbers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynamicProgramming.html#the-knapsack-problem">27.2.3. The Knapsack Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="DynamicProgramming.html#chained-matrix-multiplication">27.2.4. Chained Matrix Multiplication</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="AmortAnal.html">27.3. Amortized Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Knapsack.html">27.4. 0/1 Knapsack Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Knapsack.html#id1">27.4.1. 0/1 Knapsack Problem</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Knapsack.html#exercise-1">27.4.1.1. Exercise 1</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Knapsack.html#exercise-2">27.4.2. Exercise 2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Knapsack.html#exercise-3">27.4.3. Exercise 3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Knapsack.html#exercise-4">27.4.4. Exercise 4</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="EditDistance.html">27.5. Edit Distance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="EditDistance.html#id1">27.5.1. Edit Distance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="EditDistance.html#exercise-1">27.5.2. Exercise 1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="EditDistance.html#exercise-2">27.5.3. Exercise 2</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="StringSearchKMP.html">27.6. KMP String Search Algorithm</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="StringSearchKMP.html#id1">27.6.1. KMP String Search Algorithm</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="StringSearchBoyerMoore.html">27.7. Boyer-Moore String Search Algorithm</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="StringSearchBoyerMoore.html#id1">27.7.1. Boyer-Moore String Search Algorithm</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="StringSearchRabinKarp.html">27.8. Rabin-Karp String Search Algorithm [Draft]</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="StringSearchRabinKarp.html#id1">27.8.1. Rabin-Karp String Search Algorithm [Draft]</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="GenTreeImplement.html">27.9. General Tree Implementations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GenTreeImplement.html#id1">27.9.1. General Tree Implementations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeImplement.html#introduction">27.9.1.1. Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeImplement.html#list-of-children">27.9.1.2. List of Children</a></li>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeImplement.html#the-left-child-right-sibling-implementation">27.9.1.3. The Left-Child/Right-Sibling Implementation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeImplement.html#dynamic-node-implementations">27.9.1.4. Dynamic Node Implementations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="GenTreeImplement.html#dynamic-left-child-right-sibling-implementation">27.9.1.5. Dynamic Left-Child/Right-Sibling Implementation</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Kary.html">27.10. K-ary Tree Implementations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Kary.html#id1">27.10.1. K-ary Tree Implementations</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="limits-to-computing">
-<h1><span class="sectnum">Chapter 28 </span>Limits to Computing<a class="headerlink" href="#limits-to-computing" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="LimComp.html">28.1. Limits to Computing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="LimComp.html#id1">28.1.1. Limits to Computing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Reduction.html">28.2. Reductions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Reduction.html#id1">28.2.1. Reductions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Reduction.html#example-the-pairing-problem">28.2.1.1. Example: The Pairing Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reduction.html#reduction-and-finding-a-lower-bound">28.2.1.2. Reduction and Finding a Lower Bound</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reduction.html#the-reduction-template">28.2.1.3. The Reduction Template</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reduction.html#two-multiplication-examples">28.2.1.4. Two Multiplication Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reduction.html#bounds-theorems">28.2.1.5. Bounds Theorems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reduction.html#the-cost-of-making-a-simple-polygon">28.2.1.6. The Cost of Making a Simple Polygon</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="NPComplete.html">28.3. NP-Completeness</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="NPComplete.html#id1">28.3.1. NP-Completeness</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="NPComplete.html#hard-problems">28.3.1.1. Hard Problems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="NPComplete.html#the-theory-of-np-completeness">28.3.1.2. The Theory of NP-Completeness</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="circuitSAT.html">28.4. Circuit Satisfiability</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="circuitSAT.html#id1">28.4.1. Circuit Satisfiability</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SAT.html">28.5. Formula Satisfiability</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SAT.html#id1">28.5.1. Formula Satisfiability</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="threeSAT.html">28.6. 3-CNF Satisfiability</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="threeSAT.html#cnf-satisfiability-3-sat">28.6.1. 3-CNF Satisfiability (3-SAT)</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="clique.html">28.7. The Clique Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="clique.html#id1">28.7.1. The Clique Problem</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="independentSet.html">28.8. The Independent Set Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="independentSet.html#independent-set">28.8.1. Independent Set</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="vertexCover.html">28.9. The Vertex Cover Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="vertexCover.html#vertex-cover">28.9.1. Vertex Cover</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="hamiltonianCycle.html">28.10. The Hamiltonian Cycle Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="hamiltonianCycle.html#hamiltonian-cycle">28.10.1. Hamiltonian Cycle</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="TSP.html">28.11. The Traveling Salesman Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TSP.html#traveling-salesman">28.11.1. Traveling Salesman</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="provingNPC.html">28.12. NP-Completeness Proofs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="provingNPC.html#id1">28.12.1. NP-Completeness Proofs</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="circuitSAT_to_SAT.html">28.13. Reduction of Circuit SAT to SAT</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="circuitSAT_to_SAT.html#id1">28.13.1. Reduction of Circuit SAT to SAT</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SAT_to_threeSAT.html">28.14. Reduction of SAT to 3-SAT</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SAT_to_threeSAT.html#id1">28.14.1. Reduction of SAT to 3-SAT</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="threeSAT_to_clique.html">28.15. Reduction of 3-SAT to Clique</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="threeSAT_to_clique.html#id1">28.15.1. Reduction of 3-SAT to Clique</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="clique_to_independentSet.html">28.16. Reduction of Clique to Independent Set</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="clique_to_independentSet.html#clique-to-independent-set">28.16.1. Clique to Independent Set</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="independentSet_to_vertexCover.html">28.17. Reduction of Independent Set to Vertex Cover</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="independentSet_to_vertexCover.html#independent-set-to-vertex-cover">28.17.1. Independent Set to Vertex Cover</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="threeSAT_to_hamiltonianCycle.html">28.18. Reduction of 3-SAT to Hamiltonian Cycle</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="threeSAT_to_hamiltonianCycle.html#sat-to-hamiltonian-cycle">28.18.1. 3-SAT to Hamiltonian Cycle</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="hamiltonianCycle_to_TSP.html">28.19. Reduction of Hamiltonian Cycle to Traveling Salesman</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="hamiltonianCycle_to_TSP.html#hamiltonian-cycle-to-traveling-salesman">28.19.1. Hamiltonian Cycle to Traveling Salesman</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="NPCoping.html">28.20. Coping with NP-Complete Problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="NPCoping.html#acknowledgement">28.20.1. Acknowledgement</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Impossible.html">28.21. Unsolvable Problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Impossible.html#id1">28.21.1. Unsolvable Problems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Impossible.html#introduction">28.21.1.1. Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Impossible.html#uncountability">28.21.1.2. Uncountability</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Impossible.html#the-halting-problem-is-unsolvable">28.21.1.3. The Halting Problem Is Unsolvable</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Turing.html">28.22. Turing Machines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Turing.html#id1">28.22.1. Turing Machines</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Turing.html#a-general-model-of-computation">28.22.1.1. A General Model of Computation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Turing.html#interpreting-turing-machines">28.22.1.2. Interpreting Turing Machines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Turing.html#turing-decideable-vs-turing-acceptable-languages">28.22.1.3. Turing-Decideable vs. Turing-Acceptable Languages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Turing.html#making-more-complicated-machines">28.22.1.4. Making More Complicated Machines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Turing.html#turing-machine-extensions">28.22.1.5. Turing Machine Extensions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="appendix">
-<h1><span class="sectnum">Chapter 29 </span>Appendix<a class="headerlink" href="#appendix" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Glossary.html">29.1. Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Bibliography.html">29.2. Bibliography</a></li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ToDo.html">TODO List</a></li>
-</ul>
-</div>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
-</section>
+  </div>
 
-
+  <!-- House Prices -->
+  <div class="project-card">
+    <div class="project-left">
+      <div class="project-number">02 / 03</div>
+      <div>
+        <div class="project-name">House Prices<br>Prediction</div>
+        <div class="project-tags">
+          <span class="tag">Complete</span>
+          <span class="tag red">Python</span>
+          <span class="tag">Kaggle</span>
+          <span class="tag">XGBoost</span>
+          <span class="tag">Random Forest</span>
+        </div>
+      </div>
     </div>
-    <div class="bottomnav">
-    <p><span class="email_div" style="display:inline;"><a style="float:left;color:blue;" rel="nofollow" href="../../../lib/Privacy.html" target="_blank"> Privacy |</a> <a style="float:left;color:blue;" rel="nofollow" href="../../../lib/license.html" target="_blank">| License</a></span>&#160;&#160;
-    
-      <a  class="uplink" href="#">Contents</a>
-      &#160;&#160;::&#160;&#160;
-      <a  id="nextmod1" href="Intro.html">0.<span class="section-number">1. </span>How to Use this System</a>&#160;&#160;»
-
-</p>
-    </div>
-    <img style="float:right;" src="_static/nsf1.gif" height="62" width="62" alt=""/>
-
-
-    <div class="footer">
-      <p>
-        <span class="email_div" style="display:inline;">
-          <a id="contact_us" class="contact" style="float:left;color:blue;" rel="nofollow" href="mailto:">Contact Us |</a>
-          <a id="bugreport-link" style="float:left;color:blue;" class="bugreport-link" href="#">| Report a bug</a>
-        </span>
+    <div class="project-right">
+      <p class="project-desc">
+        Engineered 5 features from 79 raw variables using Random Forest importance.
+        Trained and compared Linear Regression, KNN, and Random Forest on 1,460 samples.
+        Fully reproducible pipeline from raw Kaggle CSV to final predictions —
+        22% RMSE improvement over baseline.
       </p>
-        &copy; Copyright 2011-2025 by OpenDSA Project Contributors and distributed under an MIT license.
-      Last updated on Oct 15, 2025.
-      Created using <a target="_blank" href="http://sphinx-doc.org/">Sphinx</a> 8.2.0.
+      <div class="project-stack"><span>Stack:</span> Python, pandas, numpy, scikit-learn, matplotlib, seaborn</div>
+      <div>
+        <div class="project-metric">0.87</div>
+        <div class="project-metric-label">R² Score · March 2026</div>
+      </div>
+      <a href="https://github.com/euvrain" class="project-link" target="_blank">
+        View on GitHub <span class="project-link-arrow">↗</span>
+      </a>
     </div>
-    
-<div id="bugreport-box" class="bugreport-popup ">
-  <a href="#" class="close"><img src="_static/Images/close_pop.png" class="btn_close" title="Close Window" alt="Close Window" /></a>
-  <form method="post" class="report" action="https://#">
-    <fieldset class="textbox">
-      <div id="bug_error" class="error"></div>
-      <label>
-        <span>Summary*:</span>
-        <input type="text" id="b_title" placeholder="Summary" />
+  </div>
 
-      </label>
-
-      <label class="os">
-        <span>Operating system*:</span>
-        <select id="b_os">
-          <option value="windows">Windows</option>
-          <option value="macos">Mac OS</option>
-          <option value="linux">Linux</option>
-          <option value="ios">iOS</option>
-          <option value="android">Android</option>
-          <option value="other">Other</option>
-        </select>
-      </label>
-
-      <label class="browser">
-        <span>Browser*:</span>
-        <select id="b_browser">
-          <option value="chrome">Chrome</option>
-          <option value="safari">Safari</option>
-          <option value="internetexplorer">Internet Explorer</option>
-          <option value="opera">Opera</option>
-          <option value="other">Other</option>
-        </select>
-      </label>
-
-      <label class="description">
-        <span>Description*:</span><br>
-        <textarea id="b_description" rows="5" cols="25" placeholder="***BUG** Please enter: (1) a consice description of the problem. (2) steps to reproduce bug. (3) the version of your browser and operating system."></textarea>
-      </label>
-
-      <label class="screenshot">
-        <span>Attach a screenshot (optional):</span>
-        <input type="file" id="b_screenshot" accept="image/*" placeholder="Attach a screenshot (optional)">
-      </label>
-
-      <p>
-        <input type="submit" id="bug-submit-button" value="Submit &rarr;"/>
+  <!-- FocusFit -->
+  <div class="project-card">
+    <div class="project-left">
+      <div class="project-number">03 / 03</div>
+      <div>
+        <div class="project-name">FocusFit — Study Session<br>Optimizer</div>
+        <div class="project-tags">
+          <span class="tag accent">In Progress</span>
+          <span class="tag">Python</span>
+          <span class="tag">scikit-learn</span>
+          <span class="tag">ADHD-informed</span>
+        </div>
+      </div>
+    </div>
+    <div class="project-right">
+      <p class="project-desc">
+        ML model predicting optimal study session lengths from user focus pattern data.
+        Features engineered from session logs; classifier performance evaluated via
+        accuracy and F1 score. Productivity trends visualized with matplotlib.
       </p>
-    </fieldset>
-  </form>
-</div>
+      <div class="project-stack"><span>Stack:</span> Python, pandas, scikit-learn, matplotlib</div>
+      <div>
+        <div class="project-metric">Soon</div>
+        <div class="project-metric-label">Dec 2025 — Present</div>
+      </div>
+      <a href="https://github.com/euvrain" class="project-link" target="_blank">
+        View on GitHub <span class="project-link-arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
 
-  </body>
+<!-- ABOUT / FINDER -->
+<section id="about">
+  <div class="section-label">Who I Am</div>
+  <div class="section-title">ABOUT</div>
+  <div class="finder-window" id="finderWindow">
+    <div class="finder-titlebar">
+      <div class="tl-group">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="finder-title">Taylor McDonald — Portfolio</div>
+    </div>
+    <div class="finder-body">
+      <div class="finder-sidebar">
+        <div class="sidebar-section-label">Navigation</div>
+        <div class="sidebar-item active">📁 Portfolio</div>
+        <div class="sidebar-item">👩‍💻 About me</div>
+        <div class="sidebar-item">✉️ Contact</div>
+        <div class="sidebar-item">🚀 Projects</div>
+        <div style="margin-top:16px">
+          <div class="sidebar-section-label">More</div>
+          <div class="sidebar-item">🐾 AllThePaws</div>
+          <div class="sidebar-item">🇰🇷 Korean</div>
+          <div class="sidebar-item">🎓 NJIT</div>
+        </div>
+      </div>
+      <div class="finder-main">
+        <div class="finder-section-title">Favorites</div>
+        <div class="finder-grid">
+
+          <div class="finder-folder">
+            <div class="folder-icon"></div>
+            <div class="folder-label">Data Science</div>
+            <div class="folder-tip">Open</div>
+            <div class="folder-popout folder-popout-a"><span class="pop-icon">🐾</span><div><div class="pop-name">PawsIQ.py</div><div class="pop-sub">In Progress</div></div></div>
+            <div class="folder-popout folder-popout-b"><span class="pop-icon">📊</span><div><div class="pop-name">HousePrices.ipynb</div><div class="pop-sub">Complete</div></div></div>
+            <div class="folder-popout folder-popout-c"><span class="pop-icon">🧠</span><div><div class="pop-name">FocusFit.py</div><div class="pop-sub">In Progress</div></div></div>
+          </div>
+
+          <div class="finder-folder">
+            <div class="folder-icon" style="background:linear-gradient(160deg,#8b2035,#5a0f20);box-shadow:0 4px 16px rgba(139,32,53,0.35)"></div>
+            <div class="folder-label">ML Models</div>
+            <div class="folder-tip">Open</div>
+            <div class="folder-popout folder-popout-a"><span class="pop-icon">📈</span><div><div class="pop-name">xgboost.pkl</div><div class="pop-sub">PawsIQ</div></div></div>
+            <div class="folder-popout folder-popout-b"><span class="pop-icon">🌲</span><div><div class="pop-name">rf_model.pkl</div><div class="pop-sub">Houses</div></div></div>
+          </div>
+
+          <div class="finder-folder">
+            <div class="folder-icon" style="background:linear-gradient(160deg,#b77dff,#7c3aed);box-shadow:0 4px 16px rgba(183,125,255,0.3)"></div>
+            <div class="folder-label">K-Culture</div>
+            <div class="folder-tip">Open</div>
+            <div class="folder-popout folder-popout-a"><span class="pop-icon">🇰🇷</span><div><div class="pop-name">Korean.anki</div><div class="pop-sub">Intermediate</div></div></div>
+            <div class="folder-popout folder-popout-b"><span class="pop-icon">✈️</span><div><div class="pop-name">Seoul2025.jpg</div><div class="pop-sub">Hanyang ERICA</div></div></div>
+          </div>
+
+          <div class="finder-folder">
+            <div class="folder-icon" style="background:linear-gradient(160deg,#60d88e,#1a7a42);box-shadow:0 4px 16px rgba(96,216,142,0.28)"></div>
+            <div class="folder-label">AllThePaws</div>
+            <div class="folder-tip">Open</div>
+            <div class="folder-popout folder-popout-a"><span class="pop-icon">🐕</span><div><div class="pop-name">clients.csv</div><div class="pop-sub">15+ recurring</div></div></div>
+            <div class="folder-popout folder-popout-b"><span class="pop-icon">📅</span><div><div class="pop-name">schedule.json</div><div class="pop-sub">Booking system</div></div></div>
+          </div>
+
+        </div>
+        <div class="finder-section-title">Recent</div>
+        <div class="finder-files">
+          <div class="finder-file">
+            <div class="file-thumb" style="background:rgba(242,167,184,0.1)">🐾</div>
+            <div class="file-name">PawsIQ.py</div>
+            <div class="file-meta">2026 — In Progress</div>
+          </div>
+          <div class="finder-file">
+            <div class="file-thumb" style="background:rgba(139,32,53,0.15)">📊</div>
+            <div class="file-name">HousePrices.ipynb</div>
+            <div class="file-meta">2026 — Complete</div>
+          </div>
+          <div class="finder-file">
+            <div class="file-thumb" style="background:rgba(183,125,255,0.1)">🧠</div>
+            <div class="file-name">FocusFit.py</div>
+            <div class="file-meta">2025 — In Progress</div>
+          </div>
+        </div>
+        <div class="info-panel">
+          <div class="info-panel-header">
+            <span class="info-panel-title">Info</span>
+            <div class="info-panel-close" id="ipClose">✕</div>
+          </div>
+          <div class="info-row"><div class="info-row-label">Currently</div><span class="info-chip">NJIT · B.S. DS · GPA 3.1</span></div>
+          <div class="info-row"><div class="info-row-label">LinkedIn</div><a href="https://linkedin.com/in/taylormarie" class="info-link" target="_blank">in/taylormarie</a></div>
+          <div class="info-row"><div class="info-row-label">GitHub</div><a href="https://github.com/euvrain" class="info-link" target="_blank">github.com/euvrain</a></div>
+          <div class="info-row"><div class="info-row-label">Email</div><a href="mailto:taylormcdoc@gmail.com" class="info-link">taylormcdoc@gmail.com</a></div>
+          <div class="info-row"><div class="info-row-label">Languages</div><span style="font-size:10px;color:var(--muted)">English · Korean (중급)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">Toolkit</div>
+  <div class="section-title">SKILLS</div>
+  <div class="skills-grid">
+    <div class="skill-block">
+      <div class="skill-block-title">ML / Data Science</div>
+      <ul class="skill-list">
+        <li>Python · SQL</li>
+        <li>scikit-learn · XGBoost · pandas · numpy</li>
+        <li>PyTorch (basics)</li>
+        <li>Statistical Learning & Modeling</li>
+        <li>Regression Analysis · Data Wrangling</li>
+      </ul>
+    </div>
+    <div class="skill-block" style="transition-delay:0.1s">
+      <div class="skill-block-title">Engineering</div>
+      <ul class="skill-list">
+        <li>FastAPI · Model Deployment</li>
+        <li>PostgreSQL</li>
+        <li>React</li>
+        <li>Git · Jupyter · VS Code</li>
+        <li>Hugging Face Spaces</li>
+      </ul>
+    </div>
+    <div class="skill-block" style="transition-delay:0.2s">
+      <div class="skill-block-title">Certifications</div>
+      <ul class="skill-list">
+        <li>Supervised ML: Regression & Classification — Coursera</li>
+        <li>Foundations: Data, Data, Everywhere — Coursera</li>
+        <li>Python Certification (In Progress) — freeCodeCamp</li>
+        <li>Headstarter AI Fellow · 2024</li>
+        <li>JPMorgan Career.edYOU Academy · 2023</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">Work & Education</div>
+  <div class="section-title">EXPERIENCE</div>
+
+  <div class="exp-item">
+    <div>
+      <div class="exp-role">Founder</div>
+      <div class="exp-company">All The Paws · East Orange, NJ</div>
+      <ul class="exp-bullets">
+        <li>Founded and registered a pet services business, growing to 15+ recurring clients within months</li>
+        <li>Designed end-to-end booking and scheduling systems covering invoicing, daily care routines, and emergency protocols</li>
+        <li>Built and maintain the business website, managing branding and client-facing UX</li>
+      </ul>
+    </div>
+    <div class="exp-meta">
+      <div class="exp-date">Sep 2025 — Present</div>
+    </div>
+  </div>
+
+  <div class="exp-item" style="transition-delay:0.1s">
+    <div>
+      <div class="exp-role">B.S. Data Science</div>
+      <div class="exp-company">NJIT · Newark, NJ · GPA 3.1</div>
+      <ul class="exp-bullets">
+        <li>Coursework: Intro to ML, Regression Analysis, Statistical Methods I & II, Statistical Methods in Data Science, Multivariate Distribution, Linear Algebra</li>
+      </ul>
+    </div>
+    <div class="exp-meta">
+      <div class="exp-date">Sep 2024 — May 2027</div>
+    </div>
+  </div>
+
+  <div class="exp-item" style="transition-delay:0.2s">
+    <div>
+      <div class="exp-role">Study Abroad</div>
+      <div class="exp-company">Hanyang University ERICA · Ansan, South Korea</div>
+      <ul class="exp-bullets">
+        <li>Coursework: Advanced Calculus, Intensive Korean</li>
+        <li>Immersive language and cultural experience; reached intermediate Korean proficiency</li>
+      </ul>
+    </div>
+    <div class="exp-meta">
+      <div class="exp-date">Feb 2025 — Jun 2025</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-grid">
+    <div>
+      <div class="section-label">Say Hi</div>
+      <div class="contact-big">Let's<br><em>Build</em><br>Together</div>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:taylormcdoc@gmail.com" class="contact-link">
+        Email <span class="contact-link-arrow">↗</span>
+      </a>
+      <a href="https://linkedin.com/in/taylormarie" class="contact-link" target="_blank">
+        LinkedIn <span class="contact-link-arrow">↗</span>
+      </a>
+      <a href="https://github.com/euvrain" class="contact-link" target="_blank">
+        GitHub <span class="contact-link-arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 <span class="footer-handle">Taylor McDonald</span></div>
+  <div>taylormcdoc@gmail.com</div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  function animCursor(){
+    cursor.style.left=mx+'px';cursor.style.top=my+'px';
+    rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;
+    ring.style.left=rx+'px';ring.style.top=ry+'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a,button,.sidebar-item,.finder-folder,.finder-file,.project-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(1.4)';});
+    el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';});
+  });
+
+  // Scroll reveal
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+  },{threshold:0.12});
+  document.querySelectorAll('.project-card,.skill-block,.finder-window,.exp-item').forEach(el=>observer.observe(el));
+  document.querySelectorAll('.project-card').forEach((c,i)=>{c.style.transitionDelay=`${i*0.1}s`;});
+
+  // Sidebar
+  document.querySelectorAll('.sidebar-item').forEach(item=>{
+    item.addEventListener('click',function(){
+      document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Info panel
+  document.getElementById('ipClose').addEventListener('click',()=>{
+    document.querySelector('.info-panel').style.display='none';
+  });
+
+  // Resume modal
+  const modal=document.getElementById('resumeModal');
+  document.getElementById('resumeBtn').addEventListener('click',()=>modal.classList.add('open'));
+  document.getElementById('modalClose').addEventListener('click',()=>modal.classList.remove('open'));
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open');});
+</script>
+</body>
 </html>
