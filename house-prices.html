@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House Prices Prediction — Taylor McDonald</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0e0e0f; --bg2: #161618; --bg3: #1e1e20; --border: rgba(255,255,255,0.08); --text: #f0ede8; --muted: #6b6b72; --accent: #f2a7b8; --accent2: #8b2035; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; cursor: none; }
+  .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; background: rgba(14,14,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; }
+  .nav-back { color: var(--muted); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  .hero { padding: 160px 48px 80px; border-bottom: 1px solid var(--border); }
+  .project-label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .project-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 100px); line-height: 0.9; letter-spacing: -0.01em; margin-bottom: 32px; }
+  .project-meta { display: flex; gap: 48px; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; gap: 6px; }
+  .meta-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .meta-value { font-size: 12px; color: var(--text); }
+  .tag { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--border); color: var(--muted); display: inline-block; margin-right: 6px; margin-top: 4px; }
+  .content { max-width: 800px; margin: 0 auto; padding: 80px 48px; }
+  .section { margin-bottom: 80px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 32px; margin-bottom: 24px; color: var(--accent); }
+  .body-text { font-size: 13px; line-height: 2; color: var(--muted); margin-bottom: 16px; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 40px 0; }
+  .metric-block { background: var(--bg2); border: 1px solid var(--border); padding: 32px; text-align: center; }
+  .metric-number { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+  .metric-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 24px; margin: 24px 0; font-size: 11px; color: var(--muted); line-height: 1.8; }
+  .code-block span { color: var(--accent); }
+  .step { display: flex; gap: 24px; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step-number { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--border); line-height: 1; flex-shrink: 0; width: 60px; }
+  .step-content h3 { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 20px; margin-bottom: 8px; }
+  .step-content p { font-size: 12px; line-height: 1.9; color: var(--muted); }
+  .model-compare { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 24px 0; }
+  .model-block { background: var(--bg2); border: 1px solid var(--border); padding: 20px; }
+  .model-name { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .model-stat { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .model-stat strong { color: var(--text); }
+  .winner { border-color: var(--accent); }
+  .winner-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: color 0.2s; margin-top: 40px; }
+  .back-link:hover { color: var(--accent); }
+  ::-webkit-scrollbar { width: 2px; } ::-webkit-scrollbar-thumb { background: var(--border); }
+  @media (max-width: 768px) { nav { padding: 16px 24px; } .hero { padding: 120px 24px 60px; } .content { padding: 60px 24px; } .metrics-grid { grid-template-columns: 1fr; } .model-compare { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<nav>
+  <a href="../index.html" class="nav-logo">Taylor McDonald</a>
+  <a href="../index.html" class="nav-back">← Back</a>
+</nav>
+
+<div class="hero">
+  <div class="project-label">Case Study · 03 / 03</div>
+  <div class="project-title">House Prices<br>Prediction</div>
+  <div class="project-meta">
+    <div class="meta-item">
+      <div class="meta-label">Timeline</div>
+      <div class="meta-value">March 2026</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Status</div>
+      <div class="meta-value"><span class="tag">Complete</span></div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Stack</div>
+      <div class="meta-value">
+        <span class="tag">Python</span><span class="tag">scikit-learn</span><span class="tag">pandas</span><span class="tag">matplotlib</span><span class="tag">seaborn</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="section">
+    <div class="section-title">The Problem</div>
+    <p class="body-text">Given a residential housing dataset with 79 features, predict sale prices as accurately as possible. The challenge: most of the 79 features add noise rather than signal. The goal was to build a reproducible pipeline that goes from raw CSV to final predictions, with careful feature selection and model comparison along the way.</p>
+    <p class="body-text">The secondary goal was to interpret model outputs in a way that's useful to a non-technical audience — identifying which factors actually drive housing value.</p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-block">
+      <div class="metric-number">0.87</div>
+      <div class="metric-label">Final R² Score</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-number">22%</div>
+      <div class="metric-label">RMSE improvement over baseline</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-number">79</div>
+      <div class="metric-label">Raw features → 5 engineered</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Approach</div>
+    <div class="step">
+      <div class="step-number">01</div>
+      <div class="step-content">
+        <h3>Exploratory Data Analysis</h3>
+        <p>Profiled all 79 features for distributions, missing values, and correlations with sale price. Identified skewed variables, categorical encodings needed, and potential multicollinearity issues.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">02</div>
+      <div class="step-content">
+        <h3>Feature Engineering</h3>
+        <p>Used Random Forest feature importance to identify the top predictive variables. Engineered 5 new predictive features, reducing the feature space from 79 to a focused set that improved model signal and reduced noise.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">03</div>
+      <div class="step-content">
+        <h3>Model Training & Comparison</h3>
+        <p>Trained and compared three models on 1,460 samples. Tuned hyperparameters (n_estimators, max_depth) via cross-validation. Random Forest won on both R² and RMSE.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">04</div>
+      <div class="step-content">
+        <h3>Interpretation</h3>
+        <p>Translated regression coefficients and feature importances into plain-language findings: lot size, neighborhood, and build quality are the top three drivers of housing value. Results framed for a non-technical audience.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Model Comparison</div>
+    <div class="model-compare">
+      <div class="model-block">
+        <div class="model-name">Linear Regression</div>
+        <div class="model-stat">R²: <strong>0.79</strong></div>
+        <div class="model-stat">RMSE: <strong>0.18</strong></div>
+      </div>
+      <div class="model-block">
+        <div class="model-name">KNN</div>
+        <div class="model-stat">R²: <strong>0.81</strong></div>
+        <div class="model-stat">RMSE: <strong>0.17</strong></div>
+      </div>
+      <div class="model-block winner">
+        <div class="winner-label">Winner</div>
+        <div class="model-name">Random Forest</div>
+        <div class="model-stat">R²: <strong>0.87</strong></div>
+        <div class="model-stat">RMSE: <strong>0.14</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Findings</div>
+    <p class="body-text">The top three drivers of housing sale price in this dataset:</p>
+    <div class="code-block">
+      <span>1. Lot size</span> — larger lots command significantly higher prices<br>
+      <span>2. Neighborhood</span> — location remains the strongest non-structural predictor<br>
+      <span>3. Build quality</span> — overall material and finish grade directly impacts value
+    </div>
+    <p class="body-text">The fully reproducible pipeline runs from raw Kaggle CSV to final predictions with documented methodology and assumptions at every step.</p>
+  </div>
+
+  <a href="../index.html" class="back-link">← Back to all projects</a>
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+</script>
+</body>
+</html>

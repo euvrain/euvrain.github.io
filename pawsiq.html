@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawsIQ — Taylor McDonald</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0e0e0f; --bg2: #161618; --bg3: #1e1e20; --border: rgba(255,255,255,0.08); --text: #f0ede8; --muted: #6b6b72; --accent: #f2a7b8; --accent2: #8b2035; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; cursor: none; }
+  .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; background: rgba(14,14,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; }
+  .nav-back { color: var(--muted); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 8px; }
+  .nav-back:hover { color: var(--text); }
+  .hero { padding: 160px 48px 80px; border-bottom: 1px solid var(--border); }
+  .project-label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .project-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 10vw, 120px); line-height: 0.9; letter-spacing: -0.01em; margin-bottom: 32px; }
+  .project-meta { display: flex; gap: 48px; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; gap: 6px; }
+  .meta-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .meta-value { font-size: 12px; color: var(--text); }
+  .tag { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--border); color: var(--muted); display: inline-block; margin-right: 6px; margin-top: 4px; }
+  .tag.accent { border-color: var(--accent); color: var(--accent); }
+  .content { max-width: 800px; margin: 0 auto; padding: 80px 48px; }
+  .section { margin-bottom: 80px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 32px; margin-bottom: 24px; color: var(--accent); }
+  .body-text { font-size: 13px; line-height: 2; color: var(--muted); margin-bottom: 16px; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 40px 0; }
+  .metric-block { background: var(--bg2); border: 1px solid var(--border); padding: 32px; text-align: center; }
+  .metric-number { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+  .metric-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 24px; margin: 24px 0; font-size: 11px; color: var(--muted); line-height: 1.8; overflow-x: auto; }
+  .code-block span { color: var(--accent); }
+  .step { display: flex; gap: 24px; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step-number { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--border); line-height: 1; flex-shrink: 0; width: 60px; }
+  .step-content h3 { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 20px; margin-bottom: 8px; }
+  .step-content p { font-size: 12px; line-height: 1.9; color: var(--muted); }
+  .limitation-box { background: rgba(139,32,53,0.1); border: 1px solid rgba(139,32,53,0.3); padding: 24px; margin: 24px 0; }
+  .limitation-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #c45070; margin-bottom: 8px; }
+  .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: color 0.2s; margin-top: 40px; }
+  .back-link:hover { color: var(--accent); }
+  ::-webkit-scrollbar { width: 2px; } ::-webkit-scrollbar-thumb { background: var(--border); }
+  @media (max-width: 768px) { nav { padding: 16px 24px; } .hero { padding: 120px 24px 60px; } .content { padding: 60px 24px; } .metrics-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<nav>
+  <a href="../index.html" class="nav-logo">Taylor McDonald</a>
+  <a href="../index.html" class="nav-back">← Back to Portfolio</a>
+</nav>
+
+<div class="hero">
+  <div class="project-label">Case Study · 01 / 03</div>
+  <div class="project-title">PawsIQ</div>
+  <div class="project-meta">
+    <div class="meta-item">
+      <div class="meta-label">Timeline</div>
+      <div class="meta-value">Apr 2026 — Present</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Status</div>
+      <div class="meta-value"><span class="tag accent">In Progress</span></div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Stack</div>
+      <div class="meta-value">
+        <span class="tag">Python</span><span class="tag">XGBoost</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">Vercel</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="section">
+    <div class="section-title">The Problem</div>
+    <p class="body-text">Running All The Paws LLC as a real pet services business, I noticed something: I was making scheduling and pricing decisions based on intuition alone. When demand spiked, I didn't know until it was too late to staff up. When demand was low, I was leaving pricing on the table by charging flat rates regardless of conditions.</p>
+    <p class="body-text">I framed this as two distinct ML problems — demand forecasting and dynamic pricing — and built a full-stack production system to solve both.</p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-block">
+      <div class="metric-number">9,935</div>
+      <div class="metric-label">NJ Bookings analyzed</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-number">16.7%</div>
+      <div class="metric-label">Simulated revenue lift</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-number">0.727</div>
+      <div class="metric-label">Pricing model R²</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Approach</div>
+    <div class="step">
+      <div class="step-number">01</div>
+      <div class="step-content">
+        <h3>Exploratory Data Analysis</h3>
+        <p>Performed EDA across 9,935 NJ booking records, profiling demand patterns by time of day, day of week, location, and walker. Identified clear peak windows and geographic clusters that informed feature engineering.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">02</div>
+      <div class="step-content">
+        <h3>Demand Forecasting Model</h3>
+        <p>Trained a GradientBoosting model on time-series folds to predict booking volume by time slot. Used 5-fold cross-validation targeting MAE as the primary operational metric. Achieved 5% RMSE improvement over baseline with stable cross-validation MAE of 0.774 ± 0.033.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">03</div>
+      <div class="step-content">
+        <h3>Dynamic Pricing Model</h3>
+        <p>Built a Ridge Regression model predicting surge multipliers per booking based on demand signals. Regularization chosen deliberately to prevent overfitting while maintaining interpretability. R²=0.727, producing 16.7% simulated revenue lift over flat-rate baseline across 1,856 held-out test cases.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">04</div>
+      <div class="step-content">
+        <h3>Production Deployment</h3>
+        <p>Both models wrapped in a FastAPI backend exposing live REST endpoints. React operator dashboard visualizes demand heatmaps, surge pricing schedules, and walker performance across 8 active walkers. Frontend deployed on Vercel, backend on Railway.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <div class="code-block">
+      <span>Data Pipeline:</span> Python · pandas · numpy · scikit-learn · XGBoost<br>
+      <span>Visualization:</span> matplotlib · seaborn · Streamlit<br>
+      <span>Backend API:</span> FastAPI · Railway<br>
+      <span>Frontend:</span> React · Vercel<br>
+      <span>Version Control:</span> Git · GitHub
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Results</div>
+    <p class="body-text">The platform transforms scheduling and pricing from intuition-based decisions into data-driven ones. The demand forecasting model enables proactive staffing decisions; the dynamic pricing engine captures revenue that flat-rate pricing leaves behind.</p>
+    <p class="body-text">The React dashboard puts both models in the hands of a non-technical operator — real-time heatmaps, surge schedules, and walker metrics all in one view.</p>
+  </div>
+
+  <a href="../index.html" class="back-link">← Back to all projects</a>
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+</script>
+</body>
+</html>

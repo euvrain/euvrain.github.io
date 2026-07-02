@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marvel Rivals Tier List — Taylor McDonald</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0e0e0f; --bg2: #161618; --bg3: #1e1e20; --border: rgba(255,255,255,0.08); --text: #f0ede8; --muted: #6b6b72; --accent: #f2a7b8; --accent2: #8b2035; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; cursor: none; }
+  .cursor { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 20px 48px; background: rgba(14,14,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.15em; color: var(--accent); text-decoration: none; }
+  .nav-back { color: var(--muted); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  .hero { padding: 160px 48px 80px; border-bottom: 1px solid var(--border); }
+  .project-label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .project-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 100px); line-height: 0.9; letter-spacing: -0.01em; margin-bottom: 32px; }
+  .project-meta { display: flex; gap: 48px; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; gap: 6px; }
+  .meta-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .meta-value { font-size: 12px; color: var(--text); }
+  .tag { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--border); color: var(--muted); display: inline-block; margin-right: 6px; margin-top: 4px; }
+  .tag.accent { border-color: var(--accent); color: var(--accent); }
+  .content { max-width: 800px; margin: 0 auto; padding: 80px 48px; }
+  .section { margin-bottom: 80px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 32px; margin-bottom: 24px; color: var(--accent); }
+  .body-text { font-size: 13px; line-height: 2; color: var(--muted); margin-bottom: 16px; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 40px 0; }
+  .metric-block { background: var(--bg2); border: 1px solid var(--border); padding: 32px; text-align: center; }
+  .metric-number { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+  .metric-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .code-block { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 24px; margin: 24px 0; font-size: 11px; color: var(--muted); line-height: 1.8; overflow-x: auto; }
+  .code-block span { color: var(--accent); }
+  .step { display: flex; gap: 24px; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step-number { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--border); line-height: 1; flex-shrink: 0; width: 60px; }
+  .step-content h3 { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 20px; margin-bottom: 8px; }
+  .step-content p { font-size: 12px; line-height: 1.9; color: var(--muted); }
+  .tier-row { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .tier-badge { font-family: 'Bebas Neue', sans-serif; font-size: 24px; width: 40px; text-align: center; flex-shrink: 0; }
+  .tier-s { color: #f2a7b8; } .tier-a { color: #f5c842; } .tier-b { color: #60d88e; } .tier-c { color: #8b9cf4; } .tier-d { color: var(--muted); }
+  .tier-desc { font-size: 11px; color: var(--muted); }
+  .limitation-box { background: rgba(139,32,53,0.1); border: 1px solid rgba(139,32,53,0.3); padding: 24px; margin: 24px 0; }
+  .limitation-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #c45070; margin-bottom: 8px; }
+  .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 2px; transition: color 0.2s; margin-top: 40px; }
+  .back-link:hover { color: var(--accent); }
+  ::-webkit-scrollbar { width: 2px; } ::-webkit-scrollbar-thumb { background: var(--border); }
+  @media (max-width: 768px) { nav { padding: 16px 24px; } .hero { padding: 120px 24px 60px; } .content { padding: 60px 24px; } .metrics-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<nav>
+  <a href="../index.html" class="nav-logo">Taylor McDonald</a>
+  <a href="../index.html" class="nav-back">← Back</a>
+</nav>
+
+<div class="hero">
+  <div class="project-label">Case Study · 02 / 03</div>
+  <div class="project-title">Marvel Rivals<br>Tier List Predictor</div>
+  <div class="project-meta">
+    <div class="meta-item">
+      <div class="meta-label">Timeline</div>
+      <div class="meta-value">June 2026</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Status</div>
+      <div class="meta-value"><span class="tag">Complete</span></div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Stack</div>
+      <div class="meta-value">
+        <span class="tag">Python</span><span class="tag">scikit-learn</span><span class="tag">Streamlit</span><span class="tag">REST API</span><span class="tag">Git</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="section">
+    <div class="section-title">The Problem</div>
+    <p class="body-text">Marvel Rivals has 40 heroes across three roles: Duelist, Strategist, and Vanguard. The question: can an ML model automatically tier heroes based purely on their in-game stats — without relying on community consensus or manual labels?</p>
+    <p class="body-text">The challenge was that heroes across different roles aren't directly comparable. A Vanguard's damage stats will always be lower than a Duelist's — not because they're weaker, but because that's not their job. Naive clustering would produce role-biased results.</p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-block">
+      <div class="metric-number">40</div>
+      <div class="metric-label">Heroes clustered</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-number">6</div>
+      <div class="metric-label">Role-normalized features</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-number">5</div>
+      <div class="metric-label">Tiers (S through D)</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Approach</div>
+    <div class="step">
+      <div class="step-number">01</div>
+      <div class="step-content">
+        <h3>API Data Collection</h3>
+        <p>Consumed the Marvel Rivals REST API with rate limit handling and URL encoding for heroes with special characters in their names. Built a modular collect.py script fetching live stats for all 40 heroes.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">02</div>
+      <div class="step-content">
+        <h3>Role-Normalized Feature Engineering</h3>
+        <p>Engineered 6 features: winrate, KDA, dps_norm, sup_norm, tank_norm, hit_rate. The key insight: damage, healing, and damage-taken stats were normalized within each role using GroupBy z-score transforms. This means a Vanguard's tankiness is compared against other Vanguards, not against Duelists.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">03</div>
+      <div class="step-content">
+        <h3>KMeans Clustering</h3>
+        <p>Applied KMeans (k=5) with StandardScaler preprocessing. Tiers automatically assigned by mapping clusters to S/A/B/C/D labels ranked by average cluster winrate — no hardcoded mappings, making the pipeline robust to data drift across game seasons.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-number">04</div>
+      <div class="step-content">
+        <h3>Streamlit Dashboard</h3>
+        <p>Deployed an interactive Streamlit dashboard displaying all 40 heroes with live API images grouped by predicted tier. Executed full Git branching and PR workflow throughout with commit messages, PR descriptions, and docstrings.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tier System</div>
+    <div class="tier-row"><div class="tier-badge tier-s">S</div><div class="tier-desc">Highest average winrate cluster — dominant meta picks</div></div>
+    <div class="tier-row"><div class="tier-badge tier-a">A</div><div class="tier-desc">Strong performers, viable in most compositions</div></div>
+    <div class="tier-row"><div class="tier-badge tier-b">B</div><div class="tier-desc">Solid but situational — work best in specific team setups</div></div>
+    <div class="tier-row"><div class="tier-badge tier-c">C</div><div class="tier-desc">Underperforming relative to role peers</div></div>
+    <div class="tier-row"><div class="tier-badge tier-d">D</div><div class="tier-desc">Lowest winrate cluster — stat-based underperformers</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Known Limitation</div>
+    <div class="limitation-box">
+      <div class="limitation-title">Utility Heroes Are Systematically Underrated</div>
+      <p class="body-text" style="margin:0">Heroes like Rocket Raccoon and Storm consistently land in lower tiers despite being considered strong by the community. Raw stats don't capture team synergy, ability kit impact, or the value of enabling other heroes. The model isn't wrong — it's revealing a real limitation of stat-only approaches to hero evaluation. This is documented in the codebase rather than overridden with manual adjustments.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <div class="code-block">
+      <span>Data Collection:</span> Python · REST API · rate limiting · URL encoding<br>
+      <span>Feature Engineering:</span> pandas · GroupBy z-score normalization<br>
+      <span>Modeling:</span> scikit-learn · KMeans · StandardScaler<br>
+      <span>Dashboard:</span> Streamlit · live hero images<br>
+      <span>Workflow:</span> Git branching · PRs · docstrings throughout
+    </div>
+  </div>
+
+  <a href="../index.html" class="back-link">← Back to all projects</a>
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+</script>
+</body>
+</html>
