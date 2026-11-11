@@ -106,7 +106,7 @@
       <div class="step-number">01</div>
       <div class="step-content">
         <h3>API Data Collection</h3>
-        <p>Consumed the Marvel Rivals REST API with rate limit handling and URL encoding for heroes with special characters in their names. Built a modular collect.py script fetching live stats for all 40 heroes.</p>
+        <p>Consumed the Marvel Rivals REST API with rate limit handling and URL encoding for heroes with special characters in their names. Built a modular collect.py script fetching live stats for all 40 heroes. When the community API went offline, I saved the June 2026 data as a snapshot and added guards so a failed API call can't overwrite it.</p>
       </div>
     </div>
     <div class="step">
@@ -127,7 +127,7 @@
       <div class="step-number">04</div>
       <div class="step-content">
         <h3>Streamlit Dashboard</h3>
-        <p>Deployed an interactive Streamlit dashboard displaying all 40 heroes with live API images grouped by predicted tier. Executed full Git branching and PR workflow throughout with commit messages, PR descriptions, and docstrings.</p>
+        <p>Built an interactive Streamlit dashboard showing all 40 heroes grouped by predicted tier, with role and winrate on each card and a role filter. It runs from the saved data snapshot. Executed full Git branching and PR workflow throughout with commit messages, PR descriptions, and docstrings.</p>
       </div>
     </div>
   </div>
@@ -155,7 +155,7 @@
       <span>Data Collection:</span> Python · REST API · rate limiting · URL encoding<br>
       <span>Feature Engineering:</span> pandas · GroupBy z-score normalization<br>
       <span>Modeling:</span> scikit-learn · KMeans · StandardScaler<br>
-      <span>Dashboard:</span> Streamlit · live hero images<br>
+      <span>Dashboard:</span> Streamlit · role filter · snapshot data<br>
       <span>Workflow:</span> Git branching · PRs · docstrings throughout
     </div>
   </div>
